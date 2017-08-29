@@ -64,6 +64,29 @@ public class CardServiceException extends Exception {
     super(msg);
     this.sw = sw;
   }
+  
+  /**
+   * Creates an exception while indicating the cause.
+   * 
+   * @param msg a message
+   * @param cause the cause
+   */
+  public CardServiceException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
+  
+
+  /**
+   * Creates an exception while indicating the cause.
+   * 
+   * @param msg a message
+   * @param cause the cause
+   * @param sw the status word that caused this CardServiceException
+   */
+  public CardServiceException(String msg, Throwable cause, int sw) {
+    super(msg, cause);
+    this.sw = sw;
+  }
 
   /**
    * Gets the message.
