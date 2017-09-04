@@ -25,6 +25,8 @@ package net.sf.scuba.smartcards;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Inputstream for reading files on ISO 7816 file system cards.
@@ -33,6 +35,8 @@ import java.util.Arrays;
  */
 public class CardFileInputStream extends InputStream {
 
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
+  
   private FileInfo[] path;
   private final byte[] buffer;
   private int bufferLength;
@@ -54,7 +58,9 @@ public class CardFileInputStream extends InputStream {
     this.fs = fs;
     synchronized(fs) {
       FileInfo[] fsPath = fs.getSelectedPath();
-      if (fsPath == null || fsPath.length < 1) { throw new CardServiceException("No valid file selected, path = " + Arrays.toString(fsPath)); }
+      if (fsPath == null || fsPath.length < 1) {
+        throw new CardServiceException("No valid file selected, path = " + Arrays.toString(fsPath));
+      }
       this.path = new FileInfo[fsPath.length];
       System.arraycopy(fsPath, 0, this.path, 0, fsPath.length);
       fileLength = fsPath[fsPath.length - 1].getFileLength();
@@ -70,12 +76,14 @@ public class CardFileInputStream extends InputStream {
     synchronized(fs) {
       try {
         if (!Arrays.equals(path, fs.getSelectedPath())) {
-          for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
+          for (FileInfo fileInfo: path) {
+            fs.selectFile(fileInfo.getFID());
+          }
         }	
       } catch (CardServiceException cse) {
         /* ERROR: selecting proper path failed. */
-        cse.printStackTrace();
-        throw new IOException(cse.getMessage()); // FIXME: proper error handling here
+        LOGGER.log(Level.WARNING, "Unexpected exception", cse);
+        throw new IOException("Unexpected exception", cse); // FIXME: proper error handling here
       }
 
       int offsetInFile = offsetBufferInFile + offsetInBuffer;
@@ -93,9 +101,9 @@ public class CardFileInputStream extends InputStream {
           offsetInBuffer = newOffsetInBuffer;
           bufferLength = newBufferLength;
         } catch (CardServiceException cse) {
-          throw new IOException(cse.toString());
+          throw new IOException("Unexpected exception", cse);
         } catch (Exception e) {
-          throw new IOException("DEBUG: Unexpected Exception: " + e.getMessage());
+          throw new IOException("Unexpected exception", e);
         }
       }
       int result = buffer[offsetInBuffer] & 0xFF;

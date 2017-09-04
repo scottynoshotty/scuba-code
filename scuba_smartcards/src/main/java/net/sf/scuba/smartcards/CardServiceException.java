@@ -72,9 +72,8 @@ public class CardServiceException extends Exception {
    * @param cause the cause
    */
   public CardServiceException(String msg, Throwable cause) {
-    super(msg, cause);
+    this(msg, cause, getSW(cause));
   }
-  
 
   /**
    * Creates an exception while indicating the cause.
@@ -93,8 +92,9 @@ public class CardServiceException extends Exception {
    * 
    * @return the message
    */
+  @Override
   public String getMessage() {
-    if (sw == -1) {
+    if (sw == SW_NONE) {
       return super.getMessage();
     } else {
       return super.getMessage() + " (SW = 0x" + Integer.toHexString(sw).toUpperCase() + ": " + statusWordToString((short)sw) + ")";
@@ -109,7 +109,15 @@ public class CardServiceException extends Exception {
   public int getSW() {
     return sw;
   }
-
+  
+  private static int getSW(Throwable cause) {
+    if (cause instanceof CardServiceException) {
+      return ((CardServiceException)cause).getSW();
+    }
+    
+    return SW_NONE;
+  }
+  
   private static String statusWordToString(short sw) {
     switch(sw) {
       case ISO7816.SW_END_OF_FILE: return "END OF FILE";
