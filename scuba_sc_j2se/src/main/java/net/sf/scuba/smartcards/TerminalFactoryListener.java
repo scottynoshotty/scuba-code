@@ -31,8 +31,8 @@ import java.util.EventListener;
  *
  * @version $Revision: 183 $
  */
-public interface TerminalFactoryListener extends EventListener
-{
+public interface TerminalFactoryListener extends EventListener {
+  
   /**
    * Called when terminal added.
    *

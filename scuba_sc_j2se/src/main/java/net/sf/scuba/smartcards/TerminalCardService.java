@@ -118,6 +118,7 @@ public class TerminalCardService extends CardService {
     return atr.getBytes();
   }
 
+  @Override
   public boolean isExtendedAPDULengthSupported() {
     //		javax.smartcardio.ATR atr = channel.getCard().getATR();
     //		byte[] historicalBytes = atr.getHistoricalBytes();		
@@ -184,6 +185,7 @@ public class TerminalCardService extends CardService {
    * 
    * @return a textual representation of this service
    */
+  @Override
   public String toString() {
     return "TerminalCardService [" + terminal.getName() + "]";
   }

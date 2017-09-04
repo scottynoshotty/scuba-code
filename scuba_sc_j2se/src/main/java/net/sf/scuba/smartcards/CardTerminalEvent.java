@@ -33,8 +33,8 @@ import javax.smartcardio.CardTerminal;
  *
  * @version $Revision: 183 $
  */
-public class CardTerminalEvent extends EventObject
-{
+public class CardTerminalEvent extends EventObject {
+  
   private static final long serialVersionUID = 8884602877518044124L;
 
   /** Event type constant. */

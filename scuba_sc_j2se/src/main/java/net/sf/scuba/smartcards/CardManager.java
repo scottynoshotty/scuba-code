@@ -884,6 +884,7 @@ public class CardManager {
       }
     }
 
+    @Override
     public String toString() {
       return "Poller for " + terminal.getName() + (isPolling ? " (polling)" : " (not polling)");
     }
