@@ -22,6 +22,7 @@
 
 package net.sf.scuba.data;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,9 @@ import java.util.List;
  * 
  * @version $Revision: $
  */
-public abstract class Country {
+public abstract class Country implements Serializable {
+
+  private static final long serialVersionUID = 9117477643532355118L;
 
   private static final Class<?>[] SUB_CLASSES = { UnicodeCountry.class, ISOCountry.class, TestCountry.class };
 

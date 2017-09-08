@@ -89,8 +89,12 @@ public class TLVOutputStream extends OutputStream {
    * @throws IOException on error writing to the underlying output stream
    */
   public void writeValue(byte[] value) throws IOException {
-    if (value == null) { throw new IllegalArgumentException("Cannot write null."); }
-    if (state.isAtStartOfTag()) { throw new IllegalStateException("Cannot write value bytes yet. Need to write a tag first."); }
+    if (value == null) {
+      throw new IllegalArgumentException("Cannot write null.");
+    }
+    if (state.isAtStartOfTag()) {
+      throw new IllegalStateException("Cannot write value bytes yet. Need to write a tag first.");
+    }
     if (state.isAtStartOfLength()) {
       writeLength(value.length);
       write(value);
