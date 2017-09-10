@@ -22,7 +22,6 @@
 
 package net.sf.scuba.smartcards;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,10 +39,8 @@ import java.util.Map.Entry;
  * 
  * @version $Revision$
  */
-public abstract class CardService implements Serializable {
-
-  private static final long serialVersionUID = 5618527358158494957L;
-
+public abstract class CardService {
+  
   static protected final int SESSION_STOPPED_STATE = 0;
   static protected final int SESSION_STARTED_STATE = 1;
 
