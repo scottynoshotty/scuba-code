@@ -31,16 +31,23 @@ package net.sf.scuba.data;
  */
 public class TestCountry extends Country {
 
+  private static final long serialVersionUID = 6977914731950342700L;
+
   /** Utopia. */
   public static final TestCountry UT = new TestCountry(-1, "UT", "UTO", "Utopia", "Utopian");
 
+
+  public static final TestCountry BP = new TestCountry(-1, "BP", "XBP", "BP", "BP");
+  public static final TestCountry DV = new TestCountry(-1, "DV", "XDV", "DV", "DV");
+
+  
   private int code;
   private String alpha2Code;
   private String alpha3Code;
   private String name;
   private String nationality;
 
-  private static final TestCountry[] VALUES = { UT };
+  private static final TestCountry[] VALUES = { UT, BP, DV };
 
   public static TestCountry[] values() {
     return VALUES;
