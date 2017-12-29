@@ -107,7 +107,7 @@ public class IsoDepCardService extends CardService {
         throw new CardServiceException("Failed response");
       }
       ResponseAPDU ourResponseAPDU = new ResponseAPDU(responseBytes);
-      notifyExchangedAPDU(++apduCount, ourCommandAPDU, ourResponseAPDU);
+      notifyExchangedAPDU(new APDUEvent(this, "ISODep", ++apduCount, ourCommandAPDU, ourResponseAPDU));
       return ourResponseAPDU;
     } catch (IOException e) {
       throw new CardServiceException(e.getMessage());
