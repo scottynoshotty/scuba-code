@@ -99,8 +99,8 @@ public abstract class CardService {
    * Creates a new service.
    */
   public CardService() {
-    apduListeners = new HashSet<APDUListener>();
-    state = SESSION_STOPPED_STATE;
+    this.apduListeners = new HashSet<APDUListener>();
+    this.state = SESSION_STOPPED_STATE;
   }
 
   /**
@@ -129,13 +129,13 @@ public abstract class CardService {
   /**
    * Notifies listeners about APDU event.
    * 
-   * @param count number of APDUs sent previously
-   * @param commandAPDU command APDU
-   * @param responseAPDU response APDU
+   * @param event the APDU event
    */
-  protected void notifyExchangedAPDU(int count, CommandAPDU commandAPDU, ResponseAPDU responseAPDU) {
-    if (apduListeners == null || apduListeners.size() < 1) { return; }
-    APDUEvent event = new APDUEvent(this, "RAW", count, commandAPDU, responseAPDU);
+  protected void notifyExchangedAPDU(APDUEvent event) {
+    if (apduListeners == null || apduListeners.size() < 1) {
+      return;
+    }
+    
     for (APDUListener listener: apduListeners) {
       listener.exchangedAPDU(event);
     }

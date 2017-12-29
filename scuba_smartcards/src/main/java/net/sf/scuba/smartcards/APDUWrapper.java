@@ -33,6 +33,13 @@ package net.sf.scuba.smartcards;
 public interface APDUWrapper {
 
   /**
+   * An indication of the type of wrapper.
+   * 
+   * @return the type of wrapper
+   */
+  String getType();
+  
+  /**
    * Wraps the command APDU buffer.
    * 
    * @param capdu the command APDU
