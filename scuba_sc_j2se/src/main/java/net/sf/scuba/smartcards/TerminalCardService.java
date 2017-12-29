@@ -105,7 +105,7 @@ public class TerminalCardService extends CardService {
       javax.smartcardio.CommandAPDU command = new javax.smartcardio.CommandAPDU(ourCommandAPDU.getBytes());
       javax.smartcardio.ResponseAPDU response = channel.transmit(command);
       ResponseAPDU ourResponseAPDU = new ResponseAPDU(response.getBytes());
-      notifyExchangedAPDU(++apduCount, ourCommandAPDU, ourResponseAPDU);
+      notifyExchangedAPDU(new APDUEvent(this, "RAW", ++apduCount, ourCommandAPDU, ourResponseAPDU));
       lastActiveTime = System.currentTimeMillis();
       return ourResponseAPDU;
     } catch (CardException ce) {
@@ -133,8 +133,7 @@ public class TerminalCardService extends CardService {
    * @return response from the terminal/card
    * @throws CardServiceException - if the card operation failed
    */
-  public byte[] transmitControlCommand(int controlCode, byte[] command)
-      throws CardServiceException {
+  public byte[] transmitControlCommand(int controlCode, byte[] command) throws CardServiceException {
     try {
       return card.transmitControlCommand(controlCode, command);
     } catch (CardException ce) {
