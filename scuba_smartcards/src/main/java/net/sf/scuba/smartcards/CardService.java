@@ -109,7 +109,7 @@ public abstract class CardService {
    * @param l the listener to add
    */
   public void addAPDUListener(APDUListener l) {
-    if (apduListeners != null) {
+    if (apduListeners != null && l != null) {
       apduListeners.add(l);
     }
   }
