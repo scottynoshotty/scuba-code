@@ -15,25 +15,26 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015  The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
 
 package net.sf.scuba.smartcards;
 
+import java.io.Serializable;
 import java.util.EventObject;
 
 public class APDUEvent extends EventObject {
 
   private static final long serialVersionUID = 7152351242541552732L;
 
-  private Object type;
+  private Serializable type;
   private int sequenceNumber;
   private CommandAPDU capdu;
   private ResponseAPDU rapdu;
 
-  public APDUEvent(Object source, Object type, int sequenceNumber, CommandAPDU capdu, ResponseAPDU rapdu) {
+  public APDUEvent(Object source, Serializable type, int sequenceNumber, CommandAPDU capdu, ResponseAPDU rapdu) {
     super(source);
     this.type = type;
     this.sequenceNumber = sequenceNumber;
@@ -41,11 +42,19 @@ public class APDUEvent extends EventObject {
     this.rapdu = rapdu;
   }
 
-  public Object getType() { return type; }
+  public Object getType() {
+    return type;
+  }
 
-  public int getSequenceNumber() { return sequenceNumber; }
+  public int getSequenceNumber() {
+    return sequenceNumber;
+  }
 
-  public CommandAPDU getCommandAPDU() { return capdu; }
+  public CommandAPDU getCommandAPDU() {
+    return capdu;
+  }
 
-  public ResponseAPDU getResponseAPDU() { return rapdu; }
+  public ResponseAPDU getResponseAPDU() {
+    return rapdu;
+  }
 }

@@ -15,19 +15,19 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009-2013 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
- * $Id: $
+ * $Id$
  */
 
 package net.sf.scuba.data;
 
 /**
  * This just defines Utopia (UT, UTO) as a special test country implementation.
- * 
+ *
  * @author The SCUBA team
- * 
- * @version $Revision: $
+ *
+ * @version $Revision$
  */
 public class TestCountry extends Country {
 
@@ -40,7 +40,7 @@ public class TestCountry extends Country {
   public static final TestCountry BP = new TestCountry(-1, "BP", "XBP", "BP", "BP");
   public static final TestCountry DV = new TestCountry(-1, "DV", "XDV", "DV", "DV");
 
-  
+
   private int code;
   private String alpha2Code;
   private String alpha3Code;
@@ -48,10 +48,6 @@ public class TestCountry extends Country {
   private String nationality;
 
   private static final TestCountry[] VALUES = { UT, BP, DV };
-
-  public static TestCountry[] values() {
-    return VALUES;
-  }
 
   private TestCountry() {
   }
@@ -64,38 +60,56 @@ public class TestCountry extends Country {
     this.nationality = nationality;
   }
 
+  public static TestCountry[] values() {
+    return VALUES;
+  }
+
+  @Override
   public int valueOf() {
     return code;
   }
 
+  @Override
   public String getName() {
     return name;
   }
 
+  @Override
   public String getNationality() {
     return nationality;
   }
 
+  @Override
   public String toAlpha2Code() {
     return alpha2Code;
   }
 
+  @Override
   public String toAlpha3Code() {
     return alpha3Code;
   }
 
+  @Override
   public String toString() {
     return alpha2Code;
   }
 
+  @Override
   public boolean equals(Object other) {
-    if (other == null) { return false; }
-    if (other == this) { return true; }
-    if (!(getClass().equals(other.getClass()))) { return false; }
+    if (other == null) {
+      return false;
+    }
+    if (other == this) {
+      return true;
+    }
+    if (!(getClass().equals(other.getClass()))) {
+      return false;
+    }
     TestCountry otherCountry = (TestCountry)other;
     return alpha3Code.equals(otherCountry.alpha3Code);
   }
 
+  @Override
   public int hashCode() {
     return 2 * alpha3Code.hashCode() + 31;
   }

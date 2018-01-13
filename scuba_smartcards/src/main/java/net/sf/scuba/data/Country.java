@@ -15,9 +15,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009-2013 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
- * $Id: $
+ * $Id$
  */
 
 package net.sf.scuba.data;
@@ -27,67 +27,80 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Generic country data type.
  * See {@link ISOCountry} and {@link TestCountry} for concrete implementations.
- * 
+ *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
- * 
- * @version $Revision: $
+ *
+ * @version $Revision$
  */
 public abstract class Country implements Serializable {
 
   private static final long serialVersionUID = 9117477643532355118L;
 
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
+
   private static final Class<?>[] SUB_CLASSES = { UnicodeCountry.class, ISOCountry.class, TestCountry.class };
 
   /**
    * Gets a country given a country code.
-   * 
+   *
    * @param code an ISO 3166 code
-   * 
+   *
    * @return a country
    */
   public static Country getInstance(int code) {
     for (Country country: values()) {
-      if (country.valueOf() == code) { return country; }
+      if (country.valueOf() == code) {
+        return country;
+      }
     }
     throw new IllegalArgumentException("Illegal country code" + Integer.toHexString(code));
   }
 
   /**
    * Gets a country given a two or three letter code.
-   * 
+   *
    * @param code an alpha code
-   * 
+   *
    * @return a country
    */
   public static Country getInstance(String code) {
-    if (code == null) { throw new IllegalArgumentException("Illegal country code"); }
+    if (code == null) {
+      throw new IllegalArgumentException("Illegal country code");
+    }
     code = code.trim();
     switch (code.length()) {
-      case 2: return fromAlpha2(code);
-      case 3: return fromAlpha3(code);
-      default: throw new IllegalArgumentException("Illegal country code " + code);
+      case 2:
+        return fromAlpha2(code);
+      case 3:
+        return fromAlpha3(code);
+      default:
+        throw new IllegalArgumentException("Illegal country code " + code);
     }
   }
 
   /**
    * All countries.
-   * 
+   *
    * @return an array containing all countries
    */
   public static Country[] values() {
     List<Country> result = new ArrayList<Country>();
-    for (Class<?> subClass: SUB_CLASSES) {
-      if (!(Country.class.isAssignableFrom(subClass))) { continue; }
+    for (Class<?> subClass : SUB_CLASSES) {
+      if (!(Country.class.isAssignableFrom(subClass))) {
+        continue;
+      }
       try {
         Method method = subClass.getMethod("values");
         Country[] subClassValues = (Country[])method.invoke(null);
         result.addAll(Arrays.asList(subClassValues));
       } catch (Exception e) {
-        e.printStackTrace();
+        LOGGER.log(Level.WARNING, "Exception", e);
       }
     }
     Country[] values = new Country[result.size()];
@@ -97,35 +110,35 @@ public abstract class Country implements Serializable {
 
   /**
    * Gets the numerical value (the code) of this country.
-   * 
+   *
    * @return the numerical value
    */
   public abstract int valueOf();
 
   /**
    * Gets the full name of the country.
-   * 
+   *
    * @return a country name
    */
   public abstract String getName();
 
   /**
    * Gets the adjectival form corresponding to the country.
-   * 
+   *
    * @return the nationality
    */
   public abstract String getNationality();
 
   /**
    * Gets the two-digit country code.
-   * 
+   *
    * @return a two-digit country code
    */
   public abstract String toAlpha2Code();
 
   /**
    * Gets the three-digit country code.
-   * 
+   *
    * @return a three-digit country code
    */
   public abstract String toAlpha3Code();
@@ -134,14 +147,18 @@ public abstract class Country implements Serializable {
 
   private static Country fromAlpha2(String code) {
     for (Country country: values()) {
-      if (country.toAlpha2Code().equals(code)) { return country; }
+      if (country.toAlpha2Code().equals(code)) {
+        return country;
+      }
     }
     throw new IllegalArgumentException("Unknown country code " + code);
   }
 
   private static Country fromAlpha3(String code) {
     for (Country country: values()) {
-      if (country.toAlpha3Code().equals(code)) { return country; }
+      if (country.toAlpha3Code().equals(code)) {
+        return country;
+      }
     }
     throw new IllegalArgumentException("Unknown country code " + code);
   }

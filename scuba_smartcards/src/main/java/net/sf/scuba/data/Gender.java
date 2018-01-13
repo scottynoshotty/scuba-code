@@ -15,9 +15,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009-2013 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
- * $Id: $
+ * $Id$
  */
 
 package net.sf.scuba.data;
@@ -25,31 +25,50 @@ package net.sf.scuba.data;
 /**
  * Possible values for a person's gender.
  * Integer values correspond to Section 5.5.3 of ISO 19794-5.
- * 
+ *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  * @author Cees-Bart Breunesse (ceesb@riscure.com)
- * 
- * @version $Revision: $
+ *
+ * @version $Revision$
  */
 public enum Gender {
 
-  MALE { public int toInt() { return 0x01; } }, 
-  FEMALE {public int toInt() { return 0x02; } }, 
-  UNKNOWN { public int toInt() { return 0xFF; } }, 
-  UNSPECIFIED {public int toInt() { return 0x00; } };
+  MALE { @Override
+    public int toInt() {
+      return 0x01;
+    }
+  },
+
+  FEMALE {@Override
+    public int toInt() {
+      return 0x02;
+    }
+  },
+  
+  UNKNOWN { @Override
+    public int toInt() {
+      return 0xFF;
+    }
+  },
+  
+  UNSPECIFIED {@Override
+    public int toInt() {
+      return 0x00;
+    }
+  };
 
   /**
    * Gets the numerical code of this gender.
-   * 
+   *
    * @return the numerical code
    */
   public abstract int toInt();
 
   /**
    * Gets a gender object given a code.
-   * 
+   *
    * @param code the numerical code
-   * 
+   *
    * @return a gender
    */
   public static Gender getInstance(int code) {

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015  The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -28,38 +28,37 @@ import net.sf.scuba.util.Hex;
 
 /**
  * TODO: Work in progess, very messy at the moment.
- * 
- * @author Wojciech Mostowski (woj@cs.ru.nl)
  *
+ * @author Wojciech Mostowski (woj@cs.ru.nl)
  */
 public class ISOFileInfo extends FileInfo {
 
-  /** This class reflects the File Control Parameters included in the FCI as described in ISO7816-4 in Table 12 */ 
+  /** This class reflects the File Control Parameters included in the FCI as described in ISO7816-4 in Table 12 */
 
-  public final static byte FCI_BYTE = 0x6F;
-  public final static byte FMD_BYTE = 0x64;
-  public final static byte FCP_BYTE = 0x62;
+  public static final byte FCI_BYTE = 0x6F;
+  public static final byte FMD_BYTE = 0x64;
+  public static final byte FCP_BYTE = 0x62;
 
-  public final static byte DATA_BYTES1 = (byte)0x80;
-  public final static byte DATA_BYTES2 = (byte)0x81;
-  public final static byte FILE_DESCRIPTOR = (byte)0x82;
-  public final static byte FILE_IDENTIFIER = (byte)0x83;
-  public final static byte DF_NAME = (byte)0x84;
-  public final static byte PROP_INFO = (byte)0x85;
-  public final static byte SECURITY_ATTR_PROP = (byte)0x86;
-  public final static byte FCI_EXT = (byte)0x87;
-  public final static byte SHORT_EF = (byte)0x88;
-  public final static byte LCS_BYTE = (byte)0x8A;
-  public final static byte SECURITY_ATTR_EXP = (byte)0x8B;
-  public final static byte SECURITY_ATTR_COMPACT = (byte)0x8C;
-  public final static byte ENV_TEMP_EF = (byte)0x8D;
-  public final static byte CHANNEL_SECURITY = (byte)0x8E;
-  public final static byte A0 = (byte)0xA0;
-  public final static byte A1 = (byte)0xA1;
-  public final static byte A2 = (byte)0xA2;
-  public final static byte A5 = (byte)0xA5;
-  public final static byte AB = (byte)0xAB;
-  public final static byte AC = (byte)0xAC;
+  public static final byte DATA_BYTES1 = (byte)0x80;
+  public static final byte DATA_BYTES2 = (byte)0x81;
+  public static final byte FILE_DESCRIPTOR = (byte)0x82;
+  public static final byte FILE_IDENTIFIER = (byte)0x83;
+  public static final byte DF_NAME = (byte)0x84;
+  public static final byte PROP_INFO = (byte)0x85;
+  public static final byte SECURITY_ATTR_PROP = (byte)0x86;
+  public static final byte FCI_EXT = (byte)0x87;
+  public static final byte SHORT_EF = (byte)0x88;
+  public static final byte LCS_BYTE = (byte)0x8A;
+  public static final byte SECURITY_ATTR_EXP = (byte)0x8B;
+  public static final byte SECURITY_ATTR_COMPACT = (byte)0x8C;
+  public static final byte ENV_TEMP_EF = (byte)0x8D;
+  public static final byte CHANNEL_SECURITY = (byte)0x8E;
+  public static final byte A0 = (byte)0xA0;
+  public static final byte A1 = (byte)0xA1;
+  public static final byte A2 = (byte)0xA2;
+  public static final byte A5 = (byte)0xA5;
+  public static final byte AB = (byte)0xAB;
+  public static final byte AC = (byte)0xAC;
 
   byte mainTag = -1;
   int fileLength = -1;
@@ -93,7 +92,7 @@ public class ISOFileInfo extends FileInfo {
     if(fileInfo[0] != FCI_BYTE && fileInfo[0] != FCP_BYTE && fileInfo[0] != FMD_BYTE) {
       throw new CardServiceException("Malformed FCI data");
     }else{
-      this.mainTag = fileInfo[0];            
+      this.mainTag = fileInfo[0];
     }
     byte[] tmp = new byte[fileInfo[1]];
     System.arraycopy(fileInfo, 2, tmp, 0, fileInfo[1]);
@@ -123,19 +122,22 @@ public class ISOFileInfo extends FileInfo {
             checkLen(len, 1, 6);
             off = 0;
             this.descriptorByte = contents[off++];
-            if(off == contents.length)
+            if(off == contents.length) {
               break;
+            }
             this.dataCodingByte = contents[off++];
-            if(off == contents.length)
+            if(off == contents.length) {
               break;
+            }
             if(contents.length == 3) {
               this.maxRecordSize = contents[off++];
             }else{
               integer = new BigInteger(new byte[]{contents[off++], contents[off++]});
               this.maxRecordSize = integer.shortValue();
             }
-            if(off == contents.length)
+            if(off == contents.length) {
               break;
+            }
             if(contents.length == 5) {
               this.maxRecordsCount = contents[off++];
             }else{
@@ -223,64 +225,64 @@ public class ISOFileInfo extends FileInfo {
             throw new CardServiceException("Malformed FCI: unrecognized tag.");
         }
       }
-    }catch(ArrayIndexOutOfBoundsException aioobe) {
+    } catch(ArrayIndexOutOfBoundsException aioobe) {
       throw new CardServiceException("Malformed FCI.");
-    }        
+    }
   }
 
   private static void checkLen(int len, int value) throws CardServiceException {
-    if(len != value) { 
+    if (len != value) {
       throw new CardServiceException("Malformed FCI.");
     }
   }
 
   private static void checkLen(int len, int minValue, int maxValue) throws CardServiceException {
-    if(!(len >= minValue && len <= maxValue)) { 
+    if (!(len >= minValue && len <= maxValue)) {
       throw new CardServiceException("Malformed FCI.");
     }
   }
 
   public byte[] getFormatted() {
     byte[] result = new byte[0];
-    if(mainTag == -1) {
+    if (mainTag == -1) {
       return result;
     }
     byte[] piece = null;
-    if(fileLength != -1) {
+    if (fileLength != -1) {
       piece = getArray(DATA_BYTES1, Hex.hexStringToBytes(Hex.shortToHexString((short)fileLength)));
       result = catArray(result, piece);
     }
-    if(fileLengthFCI != -1) {
+    if (fileLengthFCI != -1) {
       piece = getArray(DATA_BYTES2, Hex.hexStringToBytes(Hex.shortToHexString((short)fileLengthFCI)));
       result = catArray(result, piece);
 
     }
-    if(descriptorByte != -1) {
+    if (descriptorByte != -1) {
       byte[] ar1 = new byte[] {descriptorByte};
       byte[] ar2 = new byte[0];
-      if(dataCodingByte != -1) {
-        ar2 = new byte[] {dataCodingByte};                
+      if (dataCodingByte != -1) {
+        ar2 = new byte[] {dataCodingByte};
       }
       byte[] ar3 = new byte[0];
-      if(maxRecordSize != -1) {
+      if (maxRecordSize != -1) {
         String x = null;
-        if(maxRecordSize <= 256) {
-          if(maxRecordsCount == -1 ) {
+        if (maxRecordSize <= 256) {
+          if (maxRecordsCount == -1 ) {
             x = Hex.byteToHexString((byte)maxRecordSize);
-          }else{
-            x = Hex.shortToHexString(maxRecordSize);                        
+          } else {
+            x = Hex.shortToHexString(maxRecordSize);
           }
-        }else{
+        } else {
           x = Hex.shortToHexString(maxRecordSize);
         }
         ar3 = Hex.hexStringToBytes(x);
       }
       byte[] ar4 = new byte[0];
-      if(maxRecordsCount != -1) {
+      if (maxRecordsCount != -1) {
         String x = null;
-        if(maxRecordsCount <= 256) {
+        if (maxRecordsCount <= 256) {
           x = Hex.byteToHexString((byte)maxRecordsCount);
-        }else{
+        } else {
           x = Hex.shortToHexString(maxRecordsCount);
         }
         ar4 = Hex.hexStringToBytes(x);
@@ -288,76 +290,75 @@ public class ISOFileInfo extends FileInfo {
       piece = getArray(FILE_DESCRIPTOR, catArray(catArray(catArray(ar1, ar2), ar3), ar4));
       result = catArray(result, piece);
     }
-    if(fid != -1) {
+    if (fid != -1) {
       piece = getArray(FILE_IDENTIFIER, Hex.hexStringToBytes(Hex.shortToHexString(fid)));
       result = catArray(result, piece);
     }
-    if(dfName != null) {
+    if (dfName != null) {
       piece = getArray(DF_NAME, dfName);
-      result = catArray(result, piece);            
+      result = catArray(result, piece);
     }
-    if(propInfo != null) {
+    if (propInfo != null) {
       piece = getArray(PROP_INFO, propInfo);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(secAttrProp != null) {
+    if (secAttrProp != null) {
       piece = getArray(SECURITY_ATTR_PROP, secAttrProp);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(fciExt != -1) {
+    if (fciExt != -1) {
       piece = getArray(FCI_EXT, Hex.hexStringToBytes(Hex.shortToHexString(fciExt)));
       result = catArray(result, piece);
     }
-    if(shortEF != -1) {
+    if (shortEF != -1) {
       piece = getArray(SHORT_EF, (shortEF ==0) ? new byte[0] : new byte[]{shortEF});
       result = catArray(result, piece);
     }
-    if(lcsByte != -1) {
+    if (lcsByte != -1) {
       piece = getArray(LCS_BYTE, new byte[]{lcsByte});
       result = catArray(result, piece);
     }
-    if(secAttrExp != null) {
+    if (secAttrExp != null) {
       piece = getArray(SECURITY_ATTR_EXP, secAttrExp);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(secAttrCompact != null) {
+    if (secAttrCompact != null) {
       piece = getArray(SECURITY_ATTR_COMPACT, secAttrCompact);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(envTempEF != -1) {
+    if (envTempEF != -1) {
       piece = getArray(ENV_TEMP_EF, Hex.hexStringToBytes(Hex.shortToHexString(envTempEF)));
       result = catArray(result, piece);
     }
-    if(channelSecurity != -1) {
+    if (channelSecurity != -1) {
       piece = getArray(CHANNEL_SECURITY, new byte[]{channelSecurity});
       result = catArray(result, piece);
     }
-    if(a0 != null) {
+    if (a0 != null) {
       piece = getArray(A0, a0);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(a1 != null) {
+    if (a1 != null) {
       piece = getArray(A1, a1);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(a2 != null) {
+    if (a2 != null) {
       piece = getArray(A2, a2);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(a5 != null) {
+    if (a5 != null) {
       piece = getArray(A5, a5);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(ab != null) {
+    if (ab != null) {
       piece = getArray(AB, ab);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
-    if(ac != null) {
+    if (ac != null) {
       piece = getArray(AC, ac);
-      result = catArray(result, piece);                        
+      result = catArray(result, piece);
     }
     return getArray(mainTag, result);
-
   }
 
   private static byte[] getArray(byte tag, byte[] contents) {
@@ -373,11 +374,11 @@ public class ISOFileInfo extends FileInfo {
     System.arraycopy(a1, 0, result, 0, a1.length);
     System.arraycopy(a2, 0, result, a1.length, a2.length);
     return result;
-
   }
 
+  @Override
   public String toString() {
-    return 
+    return
         "Length: " + fileLength + "\n" +
         "Length FCI: " + fileLengthFCI + "\n" +
         "Desc byte: " + descriptorByte + "\n" +
@@ -409,6 +410,7 @@ public class ISOFileInfo extends FileInfo {
    *
    * @return file length
    */
+  @Override
   public short getFID() {
     return fid;
   }
@@ -419,6 +421,7 @@ public class ISOFileInfo extends FileInfo {
    *
    * @return file length
    */
+  @Override
   public int getFileLength() {
     return fileLength;
   }

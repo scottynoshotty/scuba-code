@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015  The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -24,18 +24,18 @@ package net.sf.scuba.smartcards;
 
 
 /**
- * This class implements some basic file selection / reading / writing 
+ * This class implements some basic file selection / reading / writing
  * routines from the  ISO7816-4 standard.
- * 
+ *
  * TODO: Work in heavy progress
- *  
+ *
  * @author woj
- * 
+ *
  * @version $Revision$
  */
 public abstract class AbstractFileSystemStructured implements FileSystemStructured {
 
-  public static short MF_ID = 0x3F00;
+  public static final short MF_ID = 0x3F00;
 
   private CardService service = null;
   private short selectedFID = 0;
@@ -109,28 +109,29 @@ public abstract class AbstractFileSystemStructured implements FileSystemStructur
   }
 
   public void selectDFRelative(short fid) throws CardServiceException {
-    selectFile(fid, 0x01);        
+    selectFile(fid, 0x01);
   }
 
   public void selectAID(byte[] aid) throws CardServiceException {
     selectFile(aid, 0x04);
-  } 
+  }
 
   public void selectPath(byte[] path) throws CardServiceException {
     selectFile(path, 0x08);
-  } 
+  }
 
   public void selectPathRelative(byte[] path) throws CardServiceException {
-    selectFile(path, 0x09);        
-  } 
+    selectFile(path, 0x09);
+  }
 
   private CommandAPDU createSelectFileAPDU(int p1, int p2, byte[] data, int le) {
-    if( le == 0)
+    if( le == 0) {
       return new CommandAPDU( ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data );
     //return new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data);
-    else
+    } else {
       //return new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data, le);
       return new CommandAPDU(ISO7816.CLA_ISO7816, ISO7816.INS_SELECT_FILE, p1, p2, data, le);
+    }
   }
 
 }

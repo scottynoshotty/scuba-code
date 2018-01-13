@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -25,6 +25,8 @@ package net.sf.scuba.tlv;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.scuba.util.Hex;
 
@@ -32,12 +34,14 @@ import net.sf.scuba.util.Hex;
  * State to keep track of where we are in a TLV stream.
  * This variant also stores values that were encountered, to be used in
  * {@link TLVOutputStream}.
- * 
+ *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
- * 
+ *
  * @version $Revision$
  */
 class TLVOutputState implements Cloneable {
+
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
 
   /**
    * Encoded the tags, lengths, and (partial) values.
@@ -46,7 +50,7 @@ class TLVOutputState implements Cloneable {
 
   /**
    * Encoded position, only one can be true.
-   * 
+   *
    * TFF: ^TLVVVVVV
    * FTF: T^LVVVVVV
    * FFT: TL^VVVVVV
@@ -141,7 +145,9 @@ class TLVOutputState implements Cloneable {
   }
 
   public boolean isDummyLengthSet() {
-    if (state.isEmpty()) { return false; }
+    if (state.isEmpty()) {
+      return false;
+    }
     return !state.peek().isLengthSet();
   }
 
@@ -163,10 +169,14 @@ class TLVOutputState implements Cloneable {
   }
 
   public void updatePreviousLength(int byteCount) {
-    if (state.isEmpty()) { return; }
+    if (state.isEmpty()) {
+      return;
+    }
     TLVStruct currentObject = state.peek();
 
-    if (currentObject.isLengthSet && currentObject.getLength() == byteCount) { return; }
+    if (currentObject.isLengthSet && currentObject.getLength() == byteCount) {
+      return;
+    }
 
     currentObject.setLength(byteCount);
 
@@ -184,7 +194,9 @@ class TLVOutputState implements Cloneable {
   }
 
   public void updateValueBytesProcessed(byte[] bytes, int offset, int length) {
-    if (state.isEmpty()) { return; }
+    if (state.isEmpty()) {
+      return;
+    }
     TLVStruct currentObject = state.peek();
     int bytesLeft = currentObject.getLength() - currentObject.getValueBytesProcessed();
     if (length > bytesLeft) {
@@ -205,7 +217,6 @@ class TLVOutputState implements Cloneable {
       isAtStartOfLength = false;
       isReadingValue = true;
     }
-
   }
 
   public byte[] getValue() {
@@ -215,11 +226,13 @@ class TLVOutputState implements Cloneable {
     return state.peek().getValue();
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public Object clone() {
     return new TLVOutputState((Stack<TLVStruct>)state.clone(), isAtStartOfTag, isAtStartOfLength, isReadingValue);
   }
 
+  @Override
   public String toString() {
     return state.toString();
   }
@@ -228,39 +241,73 @@ class TLVOutputState implements Cloneable {
    * TODO: ?? canBeWritten() <==> (state.size() == 1 && state.peek().isLengthSet()
    */
   public boolean canBeWritten() {
-    for (TLVStruct stackFrame: state) {
-      if (!stackFrame.isLengthSet()) { return false; }
+    for (TLVStruct stackFrame : state) {
+      if (!stackFrame.isLengthSet()) {
+        return false;
+      }
     }
     return true;
   }
 
-  private class TLVStruct implements Cloneable
-  {
+  private class TLVStruct implements Cloneable {
+
     private int tag, length;
     private boolean isLengthSet;
     private ByteArrayOutputStream value;
 
-    public TLVStruct(int tag) { this.tag = tag; this.length = Integer.MAX_VALUE; this.isLengthSet = false; this.value = new ByteArrayOutputStream(); }
+    public TLVStruct(int tag) {
+      this.tag = tag;
+      this.length = Integer.MAX_VALUE;
+      this.isLengthSet = false;
+      this.value = new ByteArrayOutputStream();
+    }
 
-    public void setLength(int length) { this.length = length; this.isLengthSet = true; }
+    public void setLength(int length) {
+      this.length = length;
+      this.isLengthSet = true;
+    }
 
-    public int getTag() { return tag; }
+    public int getTag() {
+      return tag;
+    }
 
-    public int getLength() { return length; }
+    public int getLength() {
+      return length;
+    }
 
-    public boolean isLengthSet() { return isLengthSet; }
+    public boolean isLengthSet() {
+      return isLengthSet;
+    }
 
-    public int getValueBytesProcessed() { return value.size(); }
+    public int getValueBytesProcessed() {
+      return value.size();
+    }
 
-    public byte[] getValue() { return value.toByteArray(); }
+    public byte[] getValue() {
+      return value.toByteArray();
+    }
 
-    public void write(byte[] bytes, int offset, int length) { value.write(bytes, offset, length); }
+    public void write(byte[] bytes, int offset, int length) {
+      value.write(bytes, offset, length);
+    }
 
-    public Object clone() { TLVStruct copy = new TLVStruct(tag); copy.length = this.length; copy.value = new ByteArrayOutputStream(); try { copy.value.write(this.value.toByteArray()); } catch (IOException ioe) { ioe.printStackTrace(); } return copy; }
+    @Override
+    public Object clone() {
+      TLVStruct copy = new TLVStruct(tag);
+      copy.length = this.length;
+      copy.value = new ByteArrayOutputStream();
+      try {
+        copy.value.write(this.value.toByteArray());
+      } catch (IOException ioe) {
+        LOGGER.log(Level.WARNING, "Exception", ioe);
+      }
+      return copy;
+    }
 
+    @Override
     public String toString() {
       byte[] valueBytes = value.toByteArray();
-      return "[TLVStruct " + Integer.toHexString(tag) + ", " + (isLengthSet ? length : "UNDEFINED") +", " + Hex.bytesToHexString(valueBytes) + "(" + valueBytes.length + ") ]";
+      return "[TLVStruct " + Integer.toHexString(tag) + ", " + (isLengthSet ? length : "UNDEFINED") + ", " + Hex.bytesToHexString(valueBytes) + "(" + valueBytes.length + ") ]";
     }
   }
 }

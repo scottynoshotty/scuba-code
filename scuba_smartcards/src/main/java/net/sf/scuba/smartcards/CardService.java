@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015  The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -27,23 +27,27 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Default abstract service.
  * Provides a factory method for creating card services.
  * Provides some functionality for observing apdu events.
- * 
+ *
  * @author Cees-Bart Breunesse (ceesb@cs.ru.nl)
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  * @author Pim Vullers (pim@cs.ru.nl)
- * 
+ *
  * @version $Revision$
  */
 public abstract class CardService {
-  
-  static protected final int SESSION_STOPPED_STATE = 0;
-  static protected final int SESSION_STARTED_STATE = 1;
 
+  protected static final int SESSION_STOPPED_STATE = 0;
+  protected static final int SESSION_STARTED_STATE = 1;
+
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
+  
   private static final Map<String, String> objectToServiceMap;
   static {
     objectToServiceMap = new HashMap<String, String>();
@@ -61,15 +65,28 @@ public abstract class CardService {
    */
   protected int state;
 
+  /*
+   * FIXME: visibility? -- MO
+   */
+  /**
+   * Creates a new service.
+   */
+  public CardService() {
+    this.apduListeners = new HashSet<APDUListener>();
+    this.state = SESSION_STOPPED_STATE;
+  }
+
   /**
    * Creates a card service.
-   * 
+   *
    * @param object some platform object responsible for transporting the APDU
-   * 
+   *
    * @return a card service
    */
   public static CardService getInstance(Object object) {
-    if (object == null) { throw new IllegalArgumentException(); }
+    if (object == null) {
+      throw new IllegalArgumentException();
+    }
     Class<?> objectClass = object.getClass();
     String objectClassName = objectClass.getCanonicalName();
     for (Entry<String, String> entry: objectToServiceMap.entrySet()) {
@@ -86,26 +103,16 @@ public abstract class CardService {
           }
         }
       } catch (ClassNotFoundException cnfe) {
+        LOGGER.log(Level.FINEST, "Could not find class, trying next one", cnfe);
         continue;
       }
     }
     throw new IllegalArgumentException("Could not find a CardService for object of class \"" + objectClassName + "\"");
   }
-
-  /*
-   * FIXME: visibility? -- MO
-   */
-  /**
-   * Creates a new service.
-   */
-  public CardService() {
-    this.apduListeners = new HashSet<APDUListener>();
-    this.state = SESSION_STOPPED_STATE;
-  }
-
+  
   /**
    * Adds a listener.
-   * 
+   *
    * @param l the listener to add
    */
   public void addAPDUListener(APDUListener l) {
@@ -117,7 +124,7 @@ public abstract class CardService {
   /**
    * Removes a listener.
    * If the specified listener is not present, this method has no effect.
-   * 
+   *
    * @param l the listener to remove
    */
   public void removeAPDUListener(APDUListener l) {
@@ -128,14 +135,14 @@ public abstract class CardService {
 
   /**
    * Notifies listeners about APDU event.
-   * 
+   *
    * @param event the APDU event
    */
   protected void notifyExchangedAPDU(APDUEvent event) {
-    if (apduListeners == null || apduListeners.size() < 1) {
+    if (apduListeners == null || apduListeners.isEmpty()) {
       return;
     }
-    
+
     for (APDUListener listener: apduListeners) {
       listener.exchangedAPDU(event);
     }
@@ -144,7 +151,7 @@ public abstract class CardService {
   /**
    * Opens a session with the card. Selects a reader. Connects to the card.
    * Notifies any interested apduListeners.
-   * 
+   *
    * @throws CardServiceException on error
    */
   /*
@@ -155,7 +162,7 @@ public abstract class CardService {
 
   /**
    * Whether there is a session started with the card.
-   * 
+   *
    * @return a boolean indicating whether sessions has started
    */
   /*
@@ -165,34 +172,34 @@ public abstract class CardService {
 
   /**
    * Sends an APDU to the card. Notifies any interested apduListeners.
-   * 
+   *
    * This method does not throw a CardServiceException if the ResponseAPDU
    * is status word indicating error.
-   * 
+   *
    * @param commandAPDU the Command APDU to send
    *
    * @return the Response APDU from the card, including the status word
    *
-   * @throws CardServiceException if the card operation failed 
+   * @throws CardServiceException if the card operation failed
    */
   /*
-   * @ requires state == SESSION_STARTED_STATE; 
+   * @ requires state == SESSION_STARTED_STATE;
    * @ ensures state == SESSION_STARTED_STATE;
    */
   public abstract ResponseAPDU transmit(CommandAPDU commandAPDU) throws CardServiceException;
 
   /**
    * Gets the answer to reset.
-   * 
+   *
    * @return the answer to reset
-   * 
+   *
    * @throws CardServiceException on error
    */
   public abstract byte[] getATR() throws CardServiceException;
 
   /**
    * Whether extended length APDUs are supported.
-   * 
+   *
    * @return a boolean indicating whether extended length APDUs are supported
    */
   public boolean isExtendedAPDULengthSupported() {
@@ -204,7 +211,7 @@ public abstract class CardService {
    * Notifies any interested apduListeners.
    */
   /*
-   * @ requires state == SESSION_STARTED_STATE; 
+   * @ requires state == SESSION_STARTED_STATE;
    * @ ensures state == SESSION_STOPPED_STATE;
    */
   public abstract void close();

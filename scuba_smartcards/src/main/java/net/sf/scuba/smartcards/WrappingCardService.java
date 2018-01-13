@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -24,7 +24,7 @@ package net.sf.scuba.smartcards;
 
 /**
  * CardService for easy wrapping of APDU messages.
- * 
+ *
  * @author Pim Vullers (pim@cs.ru.nl)
  *
  * @version $Revision$
@@ -42,14 +42,17 @@ public class WrappingCardService extends CardService {
     this.wrapper = wrapper;
   }
 
+  @Override
   public void open() throws CardServiceException {
     service.open();
   }
 
+  @Override
   public boolean isOpen() {
     return service.isOpen();
   }
 
+  @Override
   public ResponseAPDU transmit(CommandAPDU capdu)
       throws CardServiceException {
     if (isEnabled()) {
@@ -60,10 +63,12 @@ public class WrappingCardService extends CardService {
     }
   }
 
+  @Override
   public byte[] getATR() throws CardServiceException {
     return service.getATR();
   }
 
+  @Override
   public void close() {
     service.close();
   }

@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015  The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -30,13 +30,13 @@ import java.util.logging.Logger;
 
 /**
  * Inputstream for reading files on ISO 7816 file system cards.
- * 
+ *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
 public class CardFileInputStream extends InputStream {
 
   private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
-  
+
   private FileInfo[] path;
   private final byte[] buffer;
   private int bufferLength;
@@ -48,15 +48,15 @@ public class CardFileInputStream extends InputStream {
 
   /**
    * An input stream for reading from the currently selected file in the indicated file system.
-   * 
+   *
    * @param maxBlockSize maximum block size to use for read binaries
    * @param fs the file system
-   * 
+   *
    * @throws CardServiceException on error
    */
   public CardFileInputStream(int maxBlockSize, FileSystemStructured fs) throws CardServiceException {
     this.fs = fs;
-    synchronized(fs) {
+    synchronized(this.fs) {
       FileInfo[] fsPath = fs.getSelectedPath();
       if (fsPath == null || fsPath.length < 1) {
         throw new CardServiceException("No valid file selected, path = " + Arrays.toString(fsPath));
@@ -72,6 +72,7 @@ public class CardFileInputStream extends InputStream {
     }
   }
 
+  @Override
   public int read() throws IOException {
     synchronized(fs) {
       try {
@@ -79,7 +80,7 @@ public class CardFileInputStream extends InputStream {
           for (FileInfo fileInfo: path) {
             fs.selectFile(fileInfo.getFID());
           }
-        }	
+        }
       } catch (CardServiceException cse) {
         /* ERROR: selecting proper path failed. */
         LOGGER.log(Level.WARNING, "Unexpected exception", cse);
@@ -112,6 +113,7 @@ public class CardFileInputStream extends InputStream {
     }
   }
 
+  @Override
   public long skip(long n) {
     synchronized(fs) {
       if (n < (bufferLength - offsetInBuffer)) {
@@ -127,16 +129,19 @@ public class CardFileInputStream extends InputStream {
     }
   }
 
+  @Override
   public synchronized int available() {
     return bufferLength - offsetInBuffer;
   }
 
+  @Override
   public void mark(int readLimit) {
     synchronized(fs) {
       markedOffset = offsetBufferInFile + offsetInBuffer;
     }
   }
 
+  @Override
   public void reset() throws IOException {
     synchronized(fs) {
       if (markedOffset < 0) {
@@ -148,6 +153,7 @@ public class CardFileInputStream extends InputStream {
     }
   }
 
+  @Override
   public boolean markSupported() {
     synchronized(fs) {
       return true;
@@ -156,7 +162,7 @@ public class CardFileInputStream extends InputStream {
 
   /**
    * Gets the length of the underlying card file.
-   * 
+   *
    * @return the length of the underlying card file.
    */
   public int getLength() {
@@ -169,14 +175,11 @@ public class CardFileInputStream extends InputStream {
 
   /**
    * Reads from file with id <code>fid</code>.
-   * 
-   * @param fid
-   *            the file to read
-   * @param offsetInFile
-   *            starting offset in file
-   * @param length
-   *            the number of bytes to read, or -1 to read until EOF
-   * 
+   *
+   * @param fid the file to read
+   * @param offsetInFile starting offset in file
+   * @param length the number of bytes to read, or -1 to read until EOF
+   *
    * @return the contents of the file.
    */
   private int fillBufferFromFile(FileInfo[] path, int offsetInFile, int le) throws CardServiceException {
@@ -185,7 +188,9 @@ public class CardFileInputStream extends InputStream {
         throw new IllegalArgumentException("length too big");
       }
       if (!Arrays.equals(fs.getSelectedPath(), path)) {
-        for (FileInfo fileInfo: path) { fs.selectFile(fileInfo.getFID()); }
+        for (FileInfo fileInfo: path) {
+          fs.selectFile(fileInfo.getFID());
+        }
       }
       byte[] data = fs.readBinary(offsetInFile, le);
       System.arraycopy(data, 0, buffer, 0, data.length);

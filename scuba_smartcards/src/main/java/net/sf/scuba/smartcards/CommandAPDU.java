@@ -566,6 +566,7 @@ public final class CommandAPDU implements java.io.Serializable {
    *
    * @return a String representation of this command APDU.
    */
+  @Override
   public String toString() {
     return "CommmandAPDU: " + apdu.length + " bytes, nc=" + nc + ", ne=" + ne;
   }
@@ -578,6 +579,7 @@ public final class CommandAPDU implements java.io.Serializable {
    * @param obj the object to be compared for equality with this command APDU
    * @return true if the specified object is equal to this command APDU
    */
+  @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
@@ -594,6 +596,7 @@ public final class CommandAPDU implements java.io.Serializable {
    *
    * @return the hash code value for this command APDU.
    */
+  @Override
   public int hashCode() {
     return Arrays.hashCode(apdu);
   }

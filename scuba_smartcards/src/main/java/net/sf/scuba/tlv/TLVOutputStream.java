@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -28,9 +28,9 @@ import java.io.OutputStream;
 
 /**
  * TLV output stream.
- * 
+ *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
- * 
+ *
  * @version $Revision$
  */
 public class TLVOutputStream extends OutputStream {
@@ -50,9 +50,9 @@ public class TLVOutputStream extends OutputStream {
 
   /**
    * Writes a tag to the output stream (if TLV state allows it).
-   * 
+   *
    * @param tag the tag to write
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
   public void writeTag(int tag) throws IOException {
@@ -65,9 +65,9 @@ public class TLVOutputStream extends OutputStream {
 
   /**
    * Writes a length to the output stream (if TLV state allows it).
-   * 
+   *
    * @param length the length to write
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
   public void writeLength(int length) throws IOException {
@@ -82,10 +82,10 @@ public class TLVOutputStream extends OutputStream {
    * Writes a value at once.
    * If no tag was previously written, an exception is thrown.
    * If no length was previously written, this method will write the length before writing <code>value</code>.
-   * If length was previously written, this method will check whether the length is consistent with <code>value</code>'s length. 
-   * 
+   * If length was previously written, this method will check whether the length is consistent with <code>value</code>'s length.
+   *
    * @param value the value to write
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
   public void writeValue(byte[] value) throws IOException {
@@ -108,11 +108,12 @@ public class TLVOutputStream extends OutputStream {
    * Writes the specified byte to this output stream.
    * Note that this can only be used for writing value bytes and
    * will throw an exception unless we have already written a tag.
-   * 
+   *
    * @param b the byte to write
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
+  @Override
   public void write(int b) throws IOException {
     write(new byte[]{ (byte)b }, 0, 1);
   }
@@ -121,11 +122,12 @@ public class TLVOutputStream extends OutputStream {
    * Writes the specified bytes to this output stream.
    * Note that this can only be used for writing value bytes and
    * will throw an exception unless we have already written a tag.
-   * 
+   *
    * @param bytes the bytes to write
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
+  @Override
   public void write(byte[] bytes) throws IOException {
     write(bytes, 0, bytes.length);
   }
@@ -135,13 +137,14 @@ public class TLVOutputStream extends OutputStream {
    * specified offset.
    * Note that this can only be used for writing value bytes and
    * will throw an exception unless we have already written a tag.
-   * 
+   *
    * @param bytes the bytes to write
    * @param offset the offset
    * @param length the number of bytes to write
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
+  @Override
   public void write(byte[] bytes, int offset, int length) throws IOException {
     if (state.isAtStartOfTag()) {
       throw new IllegalStateException("Cannot write value bytes yet. Need to write a tag first.");
@@ -158,11 +161,13 @@ public class TLVOutputStream extends OutputStream {
   /**
    * Marks the end of the value written thus far. This will adjust the length and
    * write the buffer to the underlying output stream.
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
   public void writeValueEnd() throws IOException {
-    if (state.isAtStartOfLength()) { throw new IllegalStateException("Not processing value yet."); }
+    if (state.isAtStartOfLength()) {
+      throw new IllegalStateException("Not processing value yet.");
+    }
     if (state.isAtStartOfTag() && !state.isDummyLengthSet()) {
       return; /* TODO: check if this case ever happens. */
     }
@@ -179,9 +184,10 @@ public class TLVOutputStream extends OutputStream {
   /**
    * Flushes the underlying output stream. Note that this does not
    * flush the value buffer if the current value has not been completed.
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
+  @Override
   public void flush() throws IOException {
     outputStream.flush();
   }
@@ -189,9 +195,10 @@ public class TLVOutputStream extends OutputStream {
   /**
    * Closes this output stream and releases any system resources
    * associated with this stream.
-   * 
+   *
    * @throws IOException on error writing to the underlying output stream
    */
+  @Override
   public void close() throws IOException {
     if (!state.canBeWritten()) {
       throw new IllegalStateException("Cannot close stream yet, illegal TLV state.");

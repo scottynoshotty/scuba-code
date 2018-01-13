@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015  The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -26,14 +26,14 @@ package net.sf.scuba.smartcards;
  * Interface for minimal ISO file systems.
  * Implement this interface to tell {@link CardFileInputStream}
  * how to deal with card files.
- * 
+ *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  */
 public interface FileSystemStructured {
 
   /**
    * Selects a file.
-   * 
+   *
    * @param fid indicates which file to select
    * @throws CardServiceException in case of error
    */
@@ -41,7 +41,7 @@ public interface FileSystemStructured {
 
   /**
    * Reads a fragment of the currently selected file.
-   * 
+   *
    * @param offset offset
    * @param length the number of bytes to read (the result may be shorter, though)
    * @return contents of currently selected file, contains at least 1 byte, at most length.
@@ -52,9 +52,9 @@ public interface FileSystemStructured {
 
   /**
    * Identifies the currently selected file.
-   * 
+   *
    * @return a path of file identifiers or <code>null</code>.
-   * 
+   *
    * @throws CardServiceException on error
    */
   FileInfo[] getSelectedPath() throws CardServiceException;

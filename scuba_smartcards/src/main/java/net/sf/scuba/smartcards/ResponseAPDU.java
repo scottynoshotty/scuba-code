@@ -145,6 +145,7 @@ public final class ResponseAPDU implements java.io.Serializable {
    *
    * @return a String representation of this response APDU.
    */
+  @Override
   public String toString() {
     return "ResponseAPDU: " + apdu.length + " bytes, SW="
         + Integer.toHexString(getSW());
@@ -158,6 +159,7 @@ public final class ResponseAPDU implements java.io.Serializable {
    * @param obj the object to be compared for equality with this response APDU
    * @return true if the specified object is equal to this response APDU
    */
+  @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
@@ -174,6 +176,7 @@ public final class ResponseAPDU implements java.io.Serializable {
    *
    * @return the hash code value for this response APDU.
    */
+  @Override
   public int hashCode() {
     return Arrays.hashCode(apdu);
   }

@@ -15,18 +15,24 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
 
 package net.sf.scuba.tlv;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* FIXME: make class package visible only. */
 
 public class TLVUtil implements ASN1Constants {
+
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
 
   /** Hide from public interface. */
   private TLVUtil() {
@@ -36,11 +42,12 @@ public class TLVUtil implements ASN1Constants {
     int i = 3;
     for (; i >= 0; i--) {
       int mask = (0xFF << (8 * i));
-      if ((tag & mask) != 0x00) { break; }
+      if ((tag & mask) != 0x00) {
+        break;
+      }
     }
     int msByte = (((tag & (0xFF << (8 * i))) >> (8 * i)) & 0xFF);
-    boolean result = ((msByte & 0x20) == 0x00);
-    return result;
+    return ((msByte & 0x20) == 0x00);
   }
 
   public static int getTagLength(int tag) {
@@ -53,9 +60,9 @@ public class TLVUtil implements ASN1Constants {
 
   /**
    * The tag bytes of this object.
-   * 
+   *
    * @param tag the tag
-   * 
+   *
    * @return the tag bytes of this object.
    */
   public static byte[] getTagAsBytes(int tag) {
@@ -75,6 +82,9 @@ public class TLVUtil implements ASN1Constants {
         break;
       case PRIVATE_CLASS:
         tagBytes[0] |= 0xC0;
+        break;
+      default:
+        /* NOTE: Unsupported tag class. Now what? */
         break;
     }
     if (!isPrimitive(tag)) {
@@ -106,19 +116,99 @@ public class TLVUtil implements ASN1Constants {
     return out.toByteArray();
   }
 
+  /**
+   * TLV encodes an encoded data object with a tag.
+   *
+   * @param tag the tag
+   * @param data the data to encode
+   *
+   * @return the TLV encoded data
+   */
+  public static byte[] wrapDO(int tag, byte[] data) {
+    if (data == null) {
+      throw new IllegalArgumentException("Data to wrap is null");
+    }
+
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    try {
+      TLVOutputStream tlvOutputStream = new TLVOutputStream(byteArrayOutputStream);
+      tlvOutputStream.writeTag(tag);
+      tlvOutputStream.writeValue(data);
+      tlvOutputStream.flush();
+      tlvOutputStream.close();
+      return byteArrayOutputStream.toByteArray();
+    } catch (IOException ioe) {
+      // Never happens
+      throw new IllegalStateException("Error writing stream", ioe);
+    } finally {
+      try {
+        byteArrayOutputStream.close();
+      } catch (IOException ioe) {
+        LOGGER.log(Level.FINE, "Error closing stream", ioe);
+      }
+    }
+  }
+
+  /**
+   * TLV decodes tagged TLV data object.
+   *
+   * @param expectedTag the tag to expect, an {@code IllegalArgumentException} will be throws if a different tag is read
+   * @param wrappedData the encoded data
+   *
+   * @return the decoded data
+   */
+  public static byte[] unwrapDO(int expectedTag, byte[] wrappedData) {
+    if (wrappedData == null || wrappedData.length < 2)  {
+      throw new IllegalArgumentException("Wrapped data is null or length < 2");
+    }
+
+    ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(wrappedData);
+    TLVInputStream tlvInputStream = new TLVInputStream(byteArrayInputStream);
+
+    try {
+      int actualTag = tlvInputStream.readTag();
+      if (actualTag != expectedTag) {
+        throw new IllegalArgumentException("Expected tag " + Integer.toHexString(expectedTag) + ", found tag " + Integer.toHexString(actualTag));
+      }
+
+      int length = tlvInputStream.readLength();
+      byte[] value = tlvInputStream.readValue();
+      byte[] result = new byte[length];
+      System.arraycopy(value, 0, result, 0, length);
+      return result;
+    } catch (IOException ioe) {
+      // Never happens
+      throw new IllegalStateException("Error reading from stream", ioe);
+
+    } finally {
+      try {
+        tlvInputStream.close();
+        //        byteArrayInputStream.close();
+      } catch (IOException ioe) {
+        LOGGER.log(Level.FINE, "Error closing stream", ioe);
+      }
+    }
+  }
+
   static int getTagClass(int tag) {
     int i = 3;
     for (; i >= 0; i--) {
       int mask = (0xFF << (8 * i));
-      if ((tag & mask) != 0x00) { break; }
+      if ((tag & mask) != 0x00) {
+        break;
+      }
     }
     int msByte = (((tag & (0xFF << (8 * i))) >> (8 * i)) & 0xFF);
     switch (msByte & 0xC0) {
-      case 0x00: return UNIVERSAL_CLASS;
-      case 0x40: return APPLICATION_CLASS;
-      case 0x80: return CONTEXT_SPECIFIC_CLASS;
+      case 0x00:
+        return UNIVERSAL_CLASS;
+      case 0x40:
+        return APPLICATION_CLASS;
+      case 0x80:
+        return CONTEXT_SPECIFIC_CLASS;
       case 0xC0:
-      default: return PRIVATE_CLASS;
+      default:
+        return PRIVATE_CLASS;
     }
   }
 

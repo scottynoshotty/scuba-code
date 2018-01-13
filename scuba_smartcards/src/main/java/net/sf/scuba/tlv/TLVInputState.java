@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2015  The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id$
  */
@@ -26,9 +26,9 @@ import java.util.Stack;
 
 /**
  * State keeps track of where we are in a TLV stream.
- * 
+ *
  * @author The SCUBA team
- * 
+ *
  * @version $Revision$
  */
 class TLVInputState implements Cloneable {
@@ -38,15 +38,16 @@ class TLVInputState implements Cloneable {
    */
   private Stack<TLStruct> state;
 
-  /**
+  /*
    * TFF: ^TLVVVVVV
    * FTF: T^LVVVVVV
    * FFT: TL^VVVVVV
    * FFT: TLVVVV^VV
    * TFF: ^
    */
-  private boolean isAtStartOfTag, isAtStartOfLength, isReadingValue;
-
+  private boolean isAtStartOfTag;
+  private boolean isAtStartOfLength;
+  private boolean isReadingValue;
 
   public TLVInputState() {
     state = new Stack<TLStruct>();
@@ -87,8 +88,7 @@ class TLVInputState implements Cloneable {
       throw new IllegalStateException("Length not yet known.");
     }
     TLStruct currentObject = state.peek();
-    int length = currentObject.getLength();
-    return length;
+    return currentObject.getLength();
   }
 
   public int getValueBytesProcessed() {
@@ -122,7 +122,7 @@ class TLVInputState implements Cloneable {
   public void setDummyLengthProcessed() {
     isAtStartOfTag = false;
     isAtStartOfLength = false;
-    isReadingValue = true;		
+    isReadingValue = true;
   }
 
   public void setLengthProcessed(int length, int byteCount) {
@@ -142,7 +142,9 @@ class TLVInputState implements Cloneable {
   }
 
   public void updateValueBytesProcessed(int byteCount) {
-    if (state.isEmpty()) { return; }
+    if (state.isEmpty()) {
+      return;
+    }
     TLStruct currentObject = state.peek();
     int bytesLeft = currentObject.getLength() - currentObject.getValueBytesProcessed();
     if (byteCount > bytesLeft) {
@@ -164,6 +166,7 @@ class TLVInputState implements Cloneable {
     }
   }
 
+  @Override
   public Object clone() {
     /* NOTE: simply cloning the state (of type Stack) will only give a spine-deep copy. */
     Stack<TLStruct> newState = new Stack<TLStruct>();
@@ -174,28 +177,54 @@ class TLVInputState implements Cloneable {
     return new TLVInputState(newState, isAtStartOfTag, isAtStartOfLength, isReadingValue);
   }
 
+  @Override
   public String toString() {
     return state.toString();
   }
 
   private class TLStruct implements Cloneable {
 
-    private int tag, length, valueBytesRead;
+    private int tag;
+    private int length;
+    private int valueBytesRead;
 
-    public TLStruct(int tag) { this.tag = tag; this.length = Integer.MAX_VALUE; this.valueBytesRead = 0; }
+    public TLStruct(int tag) {
+      this.tag = tag;
+      this.length = Integer.MAX_VALUE;
+      this.valueBytesRead = 0;
+    }
 
-    public void setLength(int length) { this.length = length; }
+    public void setLength(int length) {
+      this.length = length;
+    }
 
-    public int getTag() { return tag; }
+    public int getTag() {
+      return tag;
+    }
 
-    public int getLength() { return length; }
+    public int getLength() {
+      return length;
+    }
 
-    public int getValueBytesProcessed() { return valueBytesRead; }
+    public int getValueBytesProcessed() {
+      return valueBytesRead;
+    }
 
-    public void updateValueBytesProcessed(int n) { this.valueBytesRead += n; }
+    public void updateValueBytesProcessed(int n) {
+      this.valueBytesRead += n;
+    }
 
-    public Object clone() { TLStruct copy = new TLStruct(tag); copy.length = this.length; copy.valueBytesRead = this.valueBytesRead; return copy; }
+    @Override
+    public Object clone() {
+      TLStruct copy = new TLStruct(tag);
+      copy.length = this.length;
+      copy.valueBytesRead = this.valueBytesRead;
+      return copy;
+    }
 
-    public String toString() { return "[TLStruct " + Integer.toHexString(tag) + ", " + length + ", " + valueBytesRead + "]"; }
+    @Override
+    public String toString() {
+      return "[TLStruct " + Integer.toHexString(tag) + ", " + length + ", " + valueBytesRead + "]";
+    }
   }
 }
