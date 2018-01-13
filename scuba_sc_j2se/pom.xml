@@ -4,7 +4,7 @@
 
   <groupId>net.sf.scuba</groupId>
   <artifactId>scuba-sc-j2se</artifactId>
-  <version>0.0.15</version>
+  <version>0.0.16-SNAPSHOT</version>
 
   <name>SCUBA-J2SE</name>
   <description>Smart Card Utils for Better Access - J2SE.</description>
@@ -12,8 +12,8 @@
 
   <licenses>
     <license>
-        <name>GNU Library or Lesser General Public License (LGPL)</name>
-        <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <name>GNU Library or Lesser General Public License (LGPL)</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
     </license>
   </licenses>
 
@@ -30,14 +30,15 @@
   </developers>
 
   <properties>
-     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jdk.version>1.6</jdk.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>net.sf.scuba</groupId>
       <artifactId>scuba-smartcards</artifactId>
-      <version>0.0.15</version>
+      <version>0.0.16-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -79,7 +80,7 @@
               <execution>
                 <id>attach-sources</id>
                 <goals>
-                <goal>jar-no-fork</goal>
+                  <goal>jar-no-fork</goal>
                 </goals>
               </execution>
             </executions>
@@ -107,7 +108,7 @@
             <version>1.5</version>
             <executions>
               <execution>
-              <id>sign-artifacts</id>
+                <id>sign-artifacts</id>
                 <phase>verify</phase>
                 <goals>
                   <goal>sign</goal>

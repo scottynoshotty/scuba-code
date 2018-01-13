@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009-2013 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id: $
  */
@@ -34,14 +34,17 @@ import javax.smartcardio.CardTerminal;
  * @version $Revision: 183 $
  */
 public class CardTerminalEvent extends EventObject {
-  
+
   private static final long serialVersionUID = 8884602877518044124L;
 
   /** Event type constant. */
-  public static final int REMOVED = 0, ADDED = 1;
+  public static final int REMOVED = 0;
+
+  /** Event type constant. */
+  public static final int ADDED = 1;
 
   private int type;
-  private CardTerminal terminal;
+  private transient CardTerminal terminal;
 
   /**
    * Creates an event.
@@ -75,45 +78,47 @@ public class CardTerminalEvent extends EventObject {
 
   /**
    * Gets a textual representation of this event.
-   * 
+   *
    * @return a textual representation of this event
    */
+  @Override
   public String toString() {
     switch (type) {
-      case REMOVED: return "Terminal '" + terminal + "' removed";
-      case ADDED: return "Terminal '" + terminal + "' added";
+      case REMOVED:
+        return "Terminal '" + terminal + "' removed";
+      case ADDED:
+        return "Terminal '" + terminal + "' added";
+      default:
+        return "CardTerminalEvent " + terminal;
     }
-    return "CardTerminalEvent " + terminal;
   }
 
   /**
    * Whether this event is equal to the event in <code>other</code>.
-   * 
+   *
    * @return a boolean
    */
+  @Override
   public boolean equals(Object other) {
-    try {
-      if (other == null) {
-        return false;
-      }
-      if (other == this) {
-        return true;
-      }
-      if (!other.getClass().equals(this.getClass())) {
-        return false;
-      }
-      CardTerminalEvent otherCardTerminalEvent = (CardTerminalEvent)other;
-      return type == otherCardTerminalEvent.type && terminal.equals(otherCardTerminalEvent.terminal);
-    } catch (ClassCastException cce) {
+    if (other == null) {
       return false;
     }
+    if (other == this) {
+      return true;
+    }
+    if (!other.getClass().equals(this.getClass())) {
+      return false;
+    }
+    CardTerminalEvent otherCardTerminalEvent = (CardTerminalEvent)other;
+    return type == otherCardTerminalEvent.type && terminal.equals(otherCardTerminalEvent.terminal);
   }
 
   /**
    * Gets a hash code for this event.
-   * 
+   *
    * @return a hash code for this event
    */
+  @Override
   public int hashCode() {
     return 5 * terminal.hashCode() + 7 * type;
   }

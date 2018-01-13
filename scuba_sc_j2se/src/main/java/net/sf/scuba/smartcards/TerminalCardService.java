@@ -15,12 +15,15 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009-2013 The SCUBA team.
+ * Copyright (C) 2009 - 2018  The SCUBA team.
  *
  * $Id: $
  */
 
 package net.sf.scuba.smartcards;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.smartcardio.Card;
 import javax.smartcardio.CardChannel;
@@ -31,14 +34,14 @@ import javax.smartcardio.CardTerminal;
  * Card service implementation for sending APDUs to a terminal using the
  * JSR 268 (<code>javax.smartcardio</code>) classes available in Java
  * SDK 6.0 and higher.
- * 
+ *
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
- * 
+ *
  * @version $Revision: 216 $
  */
 public class TerminalCardService extends CardService {
 
-  private static final long serialVersionUID = 7918176921505623791L;
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
 
   private CardTerminal terminal;
   private Card card;
@@ -48,7 +51,7 @@ public class TerminalCardService extends CardService {
 
   /**
    * Constructs a new card service.
-   * 
+   *
    * @param terminal the card terminal to connect to
    */
   public TerminalCardService(CardTerminal terminal) {
@@ -61,6 +64,7 @@ public class TerminalCardService extends CardService {
   /**
    * Opens a session with the card.
    */
+  @Override
   public void open() throws CardServiceException {
     if (isOpen()) {
       return;
@@ -70,33 +74,39 @@ public class TerminalCardService extends CardService {
         /* Prefer T=1. */
         card = terminal.connect("T=1");
       } catch (CardException ce) {
+        LOGGER.log(Level.WARNING, "Failed to connect with T=1", ce);
+
         /* If that fails, connect with any protocol available (probably T=0). */
         card = terminal.connect("*");
       }
       channel = card.getBasicChannel();
-      if (channel == null) { 
-        throw new CardServiceException("channel == null"); 
+      if (channel == null) {
+        throw new CardServiceException("channel == null");
       }
       state = SESSION_STARTED_STATE;
     } catch (CardException ce) {
-      throw new CardServiceException(ce.toString());
+      throw new CardServiceException("Exception opening connection to terminal", ce);
     }
   }
 
   /**
    * Whether there is an open session with the card.
    */
+  @Override
   public boolean isOpen() {
     return (state != SESSION_STOPPED_STATE);
   }
 
   /**
    * Sends an APDU to the card.
-   * 
+   *
    * @param ourCommandAPDU the command apdu to send
+   * 
    * @return the response from the card, including the status word
-   * @throws CardServiceException - if the card operation failed 
+   * 
+   * @throws CardServiceException - if the card operation failed
    */
+  @Override
   public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) throws CardServiceException {
     try {
       if (channel == null) {
@@ -109,10 +119,11 @@ public class TerminalCardService extends CardService {
       lastActiveTime = System.currentTimeMillis();
       return ourResponseAPDU;
     } catch (CardException ce) {
-      throw new CardServiceException(ce.toString());
+      throw new CardServiceException("Exception during transmit", ce);
     }
   }
 
+  @Override
   public byte[] getATR() {
     javax.smartcardio.ATR atr = channel.getCard().getATR();
     return atr.getBytes();
@@ -121,7 +132,7 @@ public class TerminalCardService extends CardService {
   @Override
   public boolean isExtendedAPDULengthSupported() {
     //		javax.smartcardio.ATR atr = channel.getCard().getATR();
-    //		byte[] historicalBytes = atr.getHistoricalBytes();		
+    //		byte[] historicalBytes = atr.getHistoricalBytes();
     return true; // FIXME: check ATR to see if really true
   }
 
@@ -130,24 +141,26 @@ public class TerminalCardService extends CardService {
    *
    * @param controlCode the control code to send
    * @param command the command data for the terminal
+   * 
    * @return response from the terminal/card
+   * 
    * @throws CardServiceException - if the card operation failed
    */
   public byte[] transmitControlCommand(int controlCode, byte[] command) throws CardServiceException {
     try {
       return card.transmitControlCommand(controlCode, command);
     } catch (CardException ce) {
-      ce.printStackTrace();
-      throw new CardServiceException(ce.toString());
+      throw new CardServiceException("Exception during transmit", ce);
     }
   }
 
   /**
    * Closes the session with the card.
    */
+  @Override
   public void close() {
     try {
-      if (card != null) {
+      if (card != null && terminal.isCardPresent()) {
         /*
          * WARNING: Woj: the meaning of the reset flag is actually
          * reversed w.r.t. to the official documentation, false means
@@ -156,13 +169,12 @@ public class TerminalCardService extends CardService {
          * Moreover, Linux PCSC implementation goes numb if you try to
          * disconnect a card that is not there anymore.
          */
-        if(terminal.isCardPresent()) {
-          card.disconnect(false);
-        }
+        card.disconnect(false);
       }
       state = SESSION_STOPPED_STATE;
-    } catch (Exception ce) {
+    } catch (Exception e) {
       /* Disconnect failed? Fine... */
+      LOGGER.log(Level.FINE, "Exception closing service", e);
     }
   }
 
@@ -181,7 +193,7 @@ public class TerminalCardService extends CardService {
 
   /**
    * Produces a textual representation of this service.
-   * 
+   *
    * @return a textual representation of this service
    */
   @Override
