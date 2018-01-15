@@ -17,7 +17,7 @@
  *
  * Copyright (C) 2009 - 2018  The SCUBA team.
  *
- * $Id: $
+ * $Id$
  */
 
 package net.sf.scuba.smartcards;
@@ -37,7 +37,7 @@ import javax.smartcardio.CardTerminal;
  *
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
  *
- * @version $Revision: 216 $
+ * @version $Revision$
  */
 public class TerminalCardService extends CardService {
 

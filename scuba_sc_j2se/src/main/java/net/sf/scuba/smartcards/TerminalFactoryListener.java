@@ -17,7 +17,7 @@
  *
  * Copyright (C) 2009 - 2018  The SCUBA team.
  *
- * $Id: $
+ * $Id$
  */
 
 package net.sf.scuba.smartcards;
@@ -29,7 +29,7 @@ import java.util.EventListener;
  *
  * @author Pim Vullers (pim@cs.ru.nl)
  *
- * @version $Revision: 183 $
+ * @version $Revision$
  */
 public interface TerminalFactoryListener extends EventListener {
 
