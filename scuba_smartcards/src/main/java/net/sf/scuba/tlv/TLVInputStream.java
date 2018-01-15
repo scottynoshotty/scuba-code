@@ -303,7 +303,7 @@ public class TLVInputStream extends InputStream {
   @Override
   public synchronized void mark(int readLimit) {
     inputStream.mark(readLimit);
-    markedState = (TLVInputState)state.clone();
+    markedState = new TLVInputState(state);
   }
 
   /**

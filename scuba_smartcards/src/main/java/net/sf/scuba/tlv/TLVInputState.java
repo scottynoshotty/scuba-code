@@ -22,7 +22,8 @@
 
 package net.sf.scuba.tlv;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * State keeps track of where we are in a TLV stream.
@@ -31,12 +32,12 @@ import java.util.Stack;
  *
  * @version $Revision$
  */
-class TLVInputState implements Cloneable {
+class TLVInputState {
 
   /**
    * Encodes tags, lengths, and number of valueBytes encountered thus far.
    */
-  private Stack<TLStruct> state;
+  private Deque<TLStruct> state;
 
   /*
    * TFF: ^TLVVVVVV
@@ -50,13 +51,14 @@ class TLVInputState implements Cloneable {
   private boolean isReadingValue;
 
   public TLVInputState() {
-    state = new Stack<TLStruct>();
-    isAtStartOfTag = true;
-    isAtStartOfLength = false;
-    isReadingValue = false;
+    this(new ArrayDeque<TLStruct>(), true, false, false);
   }
 
-  private TLVInputState(Stack<TLStruct> state, boolean isAtStartOfTag, boolean isAtStartOfLength, boolean isReadingValue) {
+  public TLVInputState(TLVInputState original) {
+    this(original.getDeepCopyOfState(), original.isAtStartOfTag, original.isAtStartOfLength, original.isReadingValue);
+  }
+  
+  private TLVInputState(Deque<TLStruct> state, boolean isAtStartOfTag, boolean isAtStartOfLength, boolean isReadingValue) {
     this.state = state;
     this.isAtStartOfTag = isAtStartOfTag;
     this.isAtStartOfLength = isAtStartOfLength;
@@ -167,31 +169,36 @@ class TLVInputState implements Cloneable {
   }
 
   @Override
-  public Object clone() {
-    /* NOTE: simply cloning the state (of type Stack) will only give a spine-deep copy. */
-    Stack<TLStruct> newState = new Stack<TLStruct>();
-    for (int i = 0; i < state.size(); i++) {
-      TLStruct tlStruct = state.get(i);
-      newState.add((TLStruct)tlStruct.clone());
-    }
-    return new TLVInputState(newState, isAtStartOfTag, isAtStartOfLength, isReadingValue);
-  }
-
-  @Override
   public String toString() {
     return state.toString();
   }
 
-  private class TLStruct implements Cloneable {
+  private Deque<TLStruct> getDeepCopyOfState() {
+    Deque<TLStruct> newStack = new ArrayDeque<TLStruct>(state.size());
+    for (TLStruct tlStruct: state) {
+      newStack.addLast(new TLStruct(tlStruct));
+    }
+    return newStack;
+  }
+
+  private class TLStruct {
 
     private int tag;
     private int length;
     private int valueBytesRead;
 
     public TLStruct(int tag) {
+      this(tag, Integer.MAX_VALUE, 0);
+    }
+    
+    public TLStruct(TLStruct original) {
+      this(original.tag, original.length, original.valueBytesRead);
+    }
+    
+    public TLStruct(int tag, int length, int valueBytesRead) {
       this.tag = tag;
-      this.length = Integer.MAX_VALUE;
-      this.valueBytesRead = 0;
+      this.length = length;
+      this.valueBytesRead = valueBytesRead;
     }
 
     public void setLength(int length) {
@@ -212,14 +219,6 @@ class TLVInputState implements Cloneable {
 
     public void updateValueBytesProcessed(int n) {
       this.valueBytesRead += n;
-    }
-
-    @Override
-    public Object clone() {
-      TLStruct copy = new TLStruct(tag);
-      copy.length = this.length;
-      copy.valueBytesRead = this.valueBytesRead;
-      return copy;
     }
 
     @Override

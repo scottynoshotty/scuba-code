@@ -24,7 +24,8 @@ package net.sf.scuba.tlv;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,16 +40,16 @@ import net.sf.scuba.util.Hex;
  *
  * @version $Revision$
  */
-class TLVOutputState implements Cloneable {
+class TLVOutputState {
 
   private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
 
   /**
    * Encoded the tags, lengths, and (partial) values.
    */
-  private Stack<TLVStruct> state;
+  private Deque<TLVStruct> state;
 
-  /**
+  /*
    * Encoded position, only one can be true.
    *
    * TFF: ^TLVVVVVV
@@ -57,16 +58,19 @@ class TLVOutputState implements Cloneable {
    * FFT: TLVVVV^VV
    * TFF: ^
    */
-  private boolean isAtStartOfTag, isAtStartOfLength, isReadingValue;
+  private boolean isAtStartOfTag;
+  private boolean isAtStartOfLength;
+  private boolean isReadingValue;
 
   public TLVOutputState() {
-    state = new Stack<TLVStruct>();
-    isAtStartOfTag = true;
-    isAtStartOfLength = false;
-    isReadingValue = false;
+    this(new ArrayDeque<TLVStruct>(), true, false, false);
+  }
+  
+  public TLVOutputState(TLVOutputState original) {
+    this(original.getDeepCopyOfState(), original.isAtStartOfTag, original.isAtStartOfLength, original.isReadingValue);
   }
 
-  private TLVOutputState(Stack<TLVStruct> state, boolean isAtStartOfTag, boolean isAtStartOfLength, boolean isReadingValue) {
+  private TLVOutputState(Deque<TLVStruct> state, boolean isAtStartOfTag, boolean isAtStartOfLength, boolean isReadingValue) {
     this.state = state;
     this.isAtStartOfTag = isAtStartOfTag;
     this.isAtStartOfLength = isAtStartOfLength;
@@ -227,12 +231,6 @@ class TLVOutputState implements Cloneable {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public Object clone() {
-    return new TLVOutputState((Stack<TLVStruct>)state.clone(), isAtStartOfTag, isAtStartOfLength, isReadingValue);
-  }
-
-  @Override
   public String toString() {
     return state.toString();
   }
@@ -249,17 +247,41 @@ class TLVOutputState implements Cloneable {
     return true;
   }
 
-  private class TLVStruct implements Cloneable {
+  private Deque<TLVStruct> getDeepCopyOfState() {
+    Deque<TLVStruct> newStack = new ArrayDeque<TLVStruct>(state.size());
+    for (TLVStruct tlvStruct: state) {
+      newStack.add(new TLVStruct(tlvStruct));
+    }
+    return newStack;
+  }
 
-    private int tag, length;
+  private class TLVStruct {
+
+    private int tag;
+    private int length;
     private boolean isLengthSet;
     private ByteArrayOutputStream value;
 
+    public TLVStruct(TLVStruct original) {
+      this(original.tag, original.length, original.isLengthSet, original.getValue());
+    }
+
     public TLVStruct(int tag) {
+      this(tag, Integer.MAX_VALUE, false, null);
+    }
+
+    public TLVStruct(int tag, int length, boolean isLengthSet, byte[] value) {
       this.tag = tag;
-      this.length = Integer.MAX_VALUE;
-      this.isLengthSet = false;
+      this.length = length;
+      this.isLengthSet = isLengthSet;
       this.value = new ByteArrayOutputStream();
+      if (value != null) {
+        try {
+          this.value.write(value);
+        } catch (IOException ioe) {
+          LOGGER.log(Level.FINE, "Exception writing bytes in memory", ioe);
+        }
+      }
     }
 
     public void setLength(int length) {
@@ -289,19 +311,6 @@ class TLVOutputState implements Cloneable {
 
     public void write(byte[] bytes, int offset, int length) {
       value.write(bytes, offset, length);
-    }
-
-    @Override
-    public Object clone() {
-      TLVStruct copy = new TLVStruct(tag);
-      copy.length = this.length;
-      copy.value = new ByteArrayOutputStream();
-      try {
-        copy.value.write(this.value.toByteArray());
-      } catch (IOException ioe) {
-        LOGGER.log(Level.WARNING, "Exception", ioe);
-      }
-      return copy;
     }
 
     @Override
