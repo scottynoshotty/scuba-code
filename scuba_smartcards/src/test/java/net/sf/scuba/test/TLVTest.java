@@ -141,8 +141,8 @@ public class TLVTest extends TestCase {
         tlvInputStream.close();
       }
     } catch (Exception e) {
-      fail(e.getMessage());
       LOGGER.log(Level.WARNING, "Exception", e);
+      fail(e.getMessage());
     }
   }
   
@@ -182,8 +182,8 @@ public class TLVTest extends TestCase {
         tlvInputStream.close();
       }
     } catch (Exception e) {
-      fail(e.getMessage());
       LOGGER.log(Level.WARNING, "Exception", e);
+      fail(e.getMessage());
     }
   }
 
