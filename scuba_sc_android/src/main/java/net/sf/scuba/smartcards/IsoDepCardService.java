@@ -170,4 +170,36 @@ public class IsoDepCardService extends CardService {
       /* Disconnect failed? Fine... */
     }
   }
+
+  /**
+   * Determines whether an exception indicates a tag is lost event.
+   *
+   * @param e an exception
+   *
+   * @return whether the exception indicates a tag is lost event
+   */
+  public boolean isConnectionLost(Exception e) {
+    if (e == null) {
+      return false;
+    }
+
+    String exceptionClassName = e.getClass().getName();
+
+    if (exceptionClassName != null && exceptionClassName.contains("TagLostException")) {
+      /* Exception is an Android TagLostException. */
+      return true;
+    }
+
+    String message = e.getMessage();
+    if (message == null) {
+      message = "";
+    }
+
+    if (message.toLowerCase().contains("tag was lost")) {
+      /* Exception is likely caused by an Android TagLostException. */
+      return true;
+    }
+
+    return false;
+  }
 }
