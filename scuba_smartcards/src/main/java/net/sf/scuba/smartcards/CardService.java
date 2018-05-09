@@ -59,15 +59,8 @@ public abstract class CardService {
   /** The apduListeners. */
   private Collection<APDUListener> apduListeners;
 
-  /*
-   * @ invariant state == SESSION_STOPPED_STATE || state ==
-   * SESSION_STARTED_STATE;
-   */
   protected int state;
 
-  /*
-   * FIXME: visibility? -- MO
-   */
   /**
    * Creates a new service.
    */
@@ -154,19 +147,12 @@ public abstract class CardService {
    *
    * @throws CardServiceException on error
    */
-  /*
-   * @ requires state == SESSION_STOPPED_STATE;
-   * @ ensures state == SESSION_STARTED_STATE;
-   */
   public abstract void open() throws CardServiceException;
 
   /**
    * Whether there is a session started with the card.
    *
    * @return a boolean indicating whether sessions has started
-   */
-  /*
-   * @ ensures \result == (state == SESSION_STARTED_STATE);
    */
   public abstract boolean isOpen();
 
@@ -181,10 +167,6 @@ public abstract class CardService {
    * @return the Response APDU from the card, including the status word
    *
    * @throws CardServiceException if the card operation failed
-   */
-  /*
-   * @ requires state == SESSION_STARTED_STATE;
-   * @ ensures state == SESSION_STARTED_STATE;
    */
   public abstract ResponseAPDU transmit(CommandAPDU commandAPDU) throws CardServiceException;
 
@@ -210,9 +192,14 @@ public abstract class CardService {
    * Closes the session with the card. Disconnects from the card and reader.
    * Notifies any interested apduListeners.
    */
-  /*
-   * @ requires state == SESSION_STARTED_STATE;
-   * @ ensures state == SESSION_STOPPED_STATE;
-   */
   public abstract void close();
+  
+  /**
+   * Determines whether an exception indicates a tag is lost event.
+   *
+   * @param e an exception
+   *
+   * @return whether the exception indicates a tag is lost event
+   */
+  public abstract boolean isConnectionLost(Exception e);
 }

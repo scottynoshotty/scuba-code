@@ -31,8 +31,6 @@ package net.sf.scuba.smartcards;
  */
 public class WrappingCardService extends CardService {
 
-  private static final long serialVersionUID = -1872209495542386286L;
-
   private CardService service;
   private APDUWrapper wrapper;
   private boolean enabled;
@@ -83,5 +81,10 @@ public class WrappingCardService extends CardService {
 
   public void disable() {
     enabled = false;
+  }
+
+  @Override
+  public boolean isConnectionLost(Exception e) {
+    return service.isConnectionLost(e);
   }
 }
