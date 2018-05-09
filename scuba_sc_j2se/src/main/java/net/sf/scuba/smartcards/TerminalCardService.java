@@ -200,4 +200,48 @@ public class TerminalCardService extends CardService {
   public String toString() {
     return "TerminalCardService [" + terminal.getName() + "]";
   }
+  
+  /**
+   * Determines whether an exception indicates a tag is lost event.
+   *
+   * @param e an exception
+   *
+   * @return whether the exception indicates a tag is lost event
+   */
+  public boolean isConnectionLost(Exception e) {
+    if (e == null) {
+      return false;
+    }
+
+    String message = e.getMessage();
+    if (message == null) {
+      message = "";
+    }
+
+    /*
+     * Check whether exception is likely caused by a
+     * sun.security.smartcardio.PCSCException
+     * indicating card has been removed.
+     */
+    Throwable cause = null;
+    Throwable rootCause = e;
+
+    while(null != (cause = rootCause.getCause())  && (rootCause != cause) ) {
+      rootCause = cause;
+    }
+
+    String rootMessage = rootCause.getMessage();
+    if (rootMessage == null) {
+      rootMessage = "";
+    }
+    if ("SCARD_W_REMOVED_CARD".equals(rootMessage)) {
+      return true;
+    }
+
+    if (rootMessage != null && rootMessage.contains("SCARD_E_NOT_TRANSACTED")) {
+      return true;
+    }
+
+    return false;
+  }
 }
