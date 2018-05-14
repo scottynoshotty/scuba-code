@@ -42,6 +42,8 @@ import javax.smartcardio.CardTerminal;
 import javax.smartcardio.CardTerminals;
 import javax.smartcardio.TerminalFactory;
 
+import net.sf.scuba.smartcards.*;
+
 /**
  * Manages all card terminals.
  *
