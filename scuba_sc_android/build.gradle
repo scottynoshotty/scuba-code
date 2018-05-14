@@ -19,7 +19,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "0.0.17-SNAPSHOT"
+version = "0.0.17"
 group = "net.sf.scuba"
 // artifactId is derived from rootProject.name as specified in settings.gradle
 
@@ -47,7 +47,7 @@ android {
 }
 
 dependencies {
-  compile 'net.sf.scuba:scuba-smartcards:0.0.17-SNAPSHOT'
+  compile 'net.sf.scuba:scuba-smartcards:0.0.17'
 }
 
 task copyJar(type: Copy, dependsOn:':bundleRelease') {
