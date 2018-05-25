@@ -23,6 +23,7 @@
 package net.sf.scuba.smartcards;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -124,6 +125,17 @@ public abstract class CardService {
     if (apduListeners != null) {
       apduListeners.remove(l);
     }
+  }
+
+  /**
+   * Returns the collection of APDU listeners.
+   * The result is an unmodifiable copy of the actual listeners at
+   * the moment of calling.
+   * 
+   * @return the APDU listeners
+   */
+  public Collection<APDUListener> getAPDUListeners() {
+    return Collections.unmodifiableCollection(apduListeners);
   }
 
   /**

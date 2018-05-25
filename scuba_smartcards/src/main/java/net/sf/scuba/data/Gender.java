@@ -72,8 +72,8 @@ public enum Gender {
    * @return a gender
    */
   public static Gender getInstance(int code) {
-    for(Gender g : Gender.values()) {
-      if(g.toInt() == code) {
+    for(Gender g: Gender.values()) {
+      if (g.toInt() == code) {
         return g;
       }
     }
