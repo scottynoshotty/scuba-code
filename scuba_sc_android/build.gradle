@@ -19,7 +19,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "0.0.18"
+version = "0.0.20"
 group = "net.sf.scuba"
 // artifactId is derived from rootProject.name as specified in settings.gradle
 

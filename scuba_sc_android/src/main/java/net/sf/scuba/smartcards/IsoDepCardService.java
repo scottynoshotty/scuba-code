@@ -183,6 +183,35 @@ public class IsoDepCardService extends CardService {
       return false;
     }
 
+    if (isDirectConnectionLost(e)) {
+      return true;
+    }
+
+    Throwable cause = null;
+    Throwable rootCause = e;
+
+    while (null != (cause = rootCause.getCause()) && (rootCause != cause)) {
+      rootCause = cause;
+      if (isDirectConnectionLost(rootCause)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Determines whether an exception indicates a tag is lost event.
+   *
+   * @param e an exception
+   *
+   * @return whether the exception indicates a tag is lost event
+   */
+  private boolean isDirectConnectionLost(Throwable e) {
+    if (e == null) {
+      return false;
+    }
+
     String exceptionClassName = e.getClass().getName();
 
     if (exceptionClassName != null && exceptionClassName.contains("TagLostException")) {
