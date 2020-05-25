@@ -19,7 +19,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "0.0.20"
+version = "0.0.21"
 group = "net.sf.scuba"
 // artifactId is derived from rootProject.name as specified in settings.gradle
 
@@ -52,7 +52,7 @@ dependencies {
 
 task copyJar(type: Copy, dependsOn:':bundleRelease') {
   from "$buildDir/intermediates/bundles/release"
-  into "$buildDir/outputs/libs" 
+  into "$buildDir/outputs/libs"
   include('classes.jar')
   rename ('classes.jar', "${rootProject.name}-${version}" + '.jar')
 }

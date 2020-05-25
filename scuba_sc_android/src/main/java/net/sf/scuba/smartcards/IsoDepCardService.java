@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Inspired by the work of Max Guenther (max.math.guenther@googlemail.com) for 
+ * Inspired by the work of Max Guenther (max.math.guenther@googlemail.com) for
  * aJMRTD (an Android client for JMRTD, released under the LGPL license).
  *
  * Copyright (C) 2009-2013 The SCUBA team.
@@ -26,8 +26,6 @@
 package net.sf.scuba.smartcards;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.sf.scuba.smartcards.CardService;
 import net.sf.scuba.smartcards.CardServiceException;
@@ -45,21 +43,19 @@ import android.os.Build;
  * Card service implementation for sending APDUs to a terminal using the
  * Android NFC (<code>android.nfc.tech</code>) classes available in Android
  * SDK 2.3.3 (API 10) and higher.
- * 
+ *
  * @author Pim Vullers (pim@cs.ru.nl)
- * 
+ *
  * @version $Revision: 214 $
  */
 public class IsoDepCardService extends CardService {
-
-  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
 
   private IsoDep isoDep;
   private int apduCount;
 
   /**
    * Constructs a new card service.
-   * 
+   *
    * @param isoDep the card terminal to connect to
    */
   public IsoDepCardService(IsoDep isoDep) {
@@ -82,8 +78,7 @@ public class IsoDepCardService extends CardService {
       }
       state = SESSION_STARTED_STATE;
     } catch (IOException e) {
-      LOGGER.log(Level.WARNING, "Failed to connect", e);
-      throw new CardServiceException(e.toString());
+      throw new CardServiceException("Failed to connect", e);
     }
   }
 
@@ -102,10 +97,10 @@ public class IsoDepCardService extends CardService {
 
   /**
    * Sends an APDU to the card.
-   * 
+   *
    * @param ourCommandAPDU the command apdu to send
    * @return the response from the card, including the status word
-   * @throws CardServiceException - if the card operation failed 
+   * @throws CardServiceException - if the card operation failed
    */
   public ResponseAPDU transmit(CommandAPDU ourCommandAPDU) throws CardServiceException {
     try {
@@ -119,10 +114,10 @@ public class IsoDepCardService extends CardService {
       ResponseAPDU ourResponseAPDU = new ResponseAPDU(responseBytes);
       notifyExchangedAPDU(new APDUEvent(this, "ISODep", ++apduCount, ourCommandAPDU, ourResponseAPDU));
       return ourResponseAPDU;
-    } catch (IOException e) {
-      throw new CardServiceException(e.getMessage());
+    } catch (CardServiceException cse) {
+      throw cse;
     } catch (Exception e) {
-      throw new CardServiceException(e.getMessage());
+      throw new CardServiceException("Could not tranceive APDU", e);
     }
   }
 
