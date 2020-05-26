@@ -174,12 +174,12 @@ public class IsoDepCardService extends CardService {
    * @return whether the exception indicates a tag is lost event
    */
   public boolean isConnectionLost(Exception e) {
-    if (e == null) {
-      return false;
-    }
-
     if (isDirectConnectionLost(e)) {
       return true;
+    }
+
+    if (e == null) {
+      return false;
     }
 
     Throwable cause = null;
@@ -203,6 +203,11 @@ public class IsoDepCardService extends CardService {
    * @return whether the exception indicates a tag is lost event
    */
   private boolean isDirectConnectionLost(Throwable e) {
+    if (!isoDep.isConnected()) {
+      /* Connection lost, independent from precise exception. */
+      return true;
+    }
+
     if (e == null) {
       return false;
     }
