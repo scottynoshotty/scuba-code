@@ -42,7 +42,7 @@ import net.sf.scuba.util.Hex;
  */
 class TLVOutputState {
 
-  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba.tlv");
 
   /**
    * Encoded the tags, lengths, and (partial) values.
@@ -65,7 +65,7 @@ class TLVOutputState {
   public TLVOutputState() {
     this(new ArrayDeque<TLVStruct>(), true, false, false);
   }
-  
+
   public TLVOutputState(TLVOutputState original) {
     this(original.getDeepCopyOfState(), original.isAtStartOfTag, original.isAtStartOfLength, original.isReadingValue);
   }

@@ -25,7 +25,6 @@ package net.sf.scuba.smartcards;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -83,7 +82,6 @@ public class CardFileInputStream extends InputStream {
         }
       } catch (CardServiceException cse) {
         /* ERROR: selecting proper path failed. */
-        LOGGER.log(Level.WARNING, "Unexpected exception", cse);
         throw new IOException("Unexpected exception", cse); // FIXME: proper error handling here
       }
 
@@ -97,7 +95,10 @@ public class CardFileInputStream extends InputStream {
           /* NOTE: using tmp variables here, in case fill throws an exception (which we don't catch). */
           int newOffsetBufferInFile = offsetBufferInFile + bufferLength;
           int newOffsetInBuffer = 0;
-          int newBufferLength = fillBufferFromFile(path, newOffsetBufferInFile, le);
+          int newBufferLength = 0;
+          while (newBufferLength == 0) {
+            newBufferLength = fillBufferFromFile(path, newOffsetBufferInFile, le);
+          }
           offsetBufferInFile = newOffsetBufferInFile;
           offsetInBuffer = newOffsetInBuffer;
           bufferLength = newBufferLength;
@@ -180,7 +181,7 @@ public class CardFileInputStream extends InputStream {
    * @param offsetInFile starting offset in file
    * @param length the number of bytes to read, or -1 to read until EOF
    *
-   * @return the contents of the file.
+   * @return the number of bytes that were actually buffered (at most {@code le})
    */
   private int fillBufferFromFile(FileInfo[] path, int offsetInFile, int le) throws CardServiceException {
     synchronized(fs) {
@@ -193,6 +194,10 @@ public class CardFileInputStream extends InputStream {
         }
       }
       byte[] data = fs.readBinary(offsetInFile, le);
+      if (data == null) {
+        return 0;
+      }
+
       System.arraycopy(data, 0, buffer, 0, data.length);
       return data.length;
     }

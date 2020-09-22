@@ -30,9 +30,16 @@ import java.util.logging.Logger;
 
 /* FIXME: make class package visible only. */
 
+/**
+ * Static helper utilities for the TLV streams and states.
+ *
+ * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
+ *
+ * @version $Revision$
+ */
 public class TLVUtil implements ASN1Constants {
 
-  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba.tlv");
 
   /** Hide from public interface. */
   private TLVUtil() {
@@ -138,7 +145,7 @@ public class TLVUtil implements ASN1Constants {
       tlvOutputStream.close();
       return byteArrayOutputStream.toByteArray();
     } catch (IOException ioe) {
-      // Never happens
+      // Never happens.
       throw new IllegalStateException("Error writing stream", ioe);
     } finally {
       try {
@@ -177,7 +184,7 @@ public class TLVUtil implements ASN1Constants {
       System.arraycopy(value, 0, result, 0, length);
       return result;
     } catch (IOException ioe) {
-      // Never happens
+      // Never happens.
       throw new IllegalStateException("Error reading from stream", ioe);
 
     } finally {

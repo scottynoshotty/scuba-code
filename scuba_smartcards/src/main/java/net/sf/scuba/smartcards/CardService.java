@@ -48,7 +48,7 @@ public abstract class CardService {
   protected static final int SESSION_STARTED_STATE = 1;
 
   private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
-  
+
   private static final Map<String, String> objectToServiceMap;
   static {
     objectToServiceMap = new HashMap<String, String>();
@@ -103,7 +103,7 @@ public abstract class CardService {
     }
     throw new IllegalArgumentException("Could not find a CardService for object of class \"" + objectClassName + "\"");
   }
-  
+
   /**
    * Adds a listener.
    *
@@ -131,7 +131,7 @@ public abstract class CardService {
    * Returns the collection of APDU listeners.
    * The result is an unmodifiable copy of the actual listeners at
    * the moment of calling.
-   * 
+   *
    * @return the APDU listeners
    */
   public Collection<APDUListener> getAPDUListeners() {
@@ -192,7 +192,7 @@ public abstract class CardService {
   public abstract byte[] getATR() throws CardServiceException;
 
   /**
-   * Whether extended length APDUs are supported.
+   * Returns a boolean indicating whether extended length APDUs are supported.
    *
    * @return a boolean indicating whether extended length APDUs are supported
    */
@@ -205,7 +205,7 @@ public abstract class CardService {
    * Notifies any interested apduListeners.
    */
   public abstract void close();
-  
+
   /**
    * Determines whether an exception indicates a tag is lost event.
    *

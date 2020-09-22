@@ -31,7 +31,7 @@ import net.sf.scuba.util.Hex;
 
 class ASN1Util implements ASN1Constants {
 
-  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba.tlv");
 
   private static final String SDF = "yyMMddhhmmss'Z'";
 
@@ -76,7 +76,7 @@ class ASN1Util implements ASN1Constants {
           return valueBytes;
         }
       default:
-        return valueBytes;          
+        return valueBytes;
     }
   }
 

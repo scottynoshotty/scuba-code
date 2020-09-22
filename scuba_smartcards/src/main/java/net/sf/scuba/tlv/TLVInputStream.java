@@ -31,7 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * TLV input stream.
+ * An input-stream for parsing TLV structures that wraps an existing input-stream.
  *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  *
@@ -39,8 +39,8 @@ import java.util.logging.Logger;
  */
 public class TLVInputStream extends InputStream {
 
-  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba");
-  
+  private static final Logger LOGGER = Logger.getLogger("net.sf.scuba.tlv");
+
   /* 64K ought to be enough for anybody. */
   private static final int MAX_BUFFER_LENGTH = 65535; // Integer.MAX_VALUE;
 
@@ -249,8 +249,8 @@ public class TLVInputStream extends InputStream {
 
   /**
    * Returns an estimate of the number of bytes that can be read (or
-   * skipped over) from this input stream without blocking by the next
-   * invocation of a method for this input stream.
+   * skipped over) from this input-stream without blocking by the next
+   * invocation of a method for this input-stream.
    *
    * @return a number of bytes
    *
@@ -262,7 +262,7 @@ public class TLVInputStream extends InputStream {
   }
 
   /**
-   * Reads the next byte of data from the input stream.
+   * Reads the next byte of data from the input-stream.
    *
    * @return a byte
    *
@@ -296,7 +296,7 @@ public class TLVInputStream extends InputStream {
   }
 
   /**
-   * Marks the underlying input stream if supported.
+   * Marks the underlying input-stream if supported.
    *
    * @param readLimit limit for marking
    */
@@ -308,7 +308,7 @@ public class TLVInputStream extends InputStream {
 
   /**
    * Whether marking and resetting are supported.
-   * We support this whenever the underlying input stream supports it.
+   * We support this whenever the underlying input-stream supports it.
    *
    * @return whether mark and reset are supported
    */
@@ -318,7 +318,7 @@ public class TLVInputStream extends InputStream {
   }
 
   /**
-   * Resets the underlying input stream if supported.
+   * Resets the underlying input-stream if supported.
    *
    * @throws IOException if something goes wrong
    */
@@ -333,7 +333,7 @@ public class TLVInputStream extends InputStream {
   }
 
   /**
-   * Closes this input stream.
+   * Closes this input-stream.
    *
    * @throws IOException if something goes wrong
    */

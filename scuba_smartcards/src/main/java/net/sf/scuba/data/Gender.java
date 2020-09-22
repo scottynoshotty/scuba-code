@@ -44,13 +44,13 @@ public enum Gender {
       return 0x02;
     }
   },
-  
+
   UNKNOWN { @Override
     public int toInt() {
       return 0xFF;
     }
   },
-  
+
   UNSPECIFIED {@Override
     public int toInt() {
       return 0x00;

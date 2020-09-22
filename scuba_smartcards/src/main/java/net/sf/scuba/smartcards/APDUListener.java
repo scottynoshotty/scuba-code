@@ -25,10 +25,11 @@ package net.sf.scuba.smartcards;
 import java.util.EventListener;
 
 /**
- * Specifies an event handler type to react to apdu events.
+ * Specifies an event handler type to react to APDU events.
  *
  * @author Engelbert Hubbers (hubbers@cs.ru.nl)
  * @author Martijn Oostdijk (martijno@cs.ru.nl)
+ *
  * @version $Revision$
  */
 public interface APDUListener extends EventListener {

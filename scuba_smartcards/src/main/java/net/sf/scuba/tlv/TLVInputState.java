@@ -57,7 +57,7 @@ class TLVInputState {
   public TLVInputState(TLVInputState original) {
     this(original.getDeepCopyOfState(), original.isAtStartOfTag, original.isAtStartOfLength, original.isReadingValue);
   }
-  
+
   private TLVInputState(Deque<TLStruct> state, boolean isAtStartOfTag, boolean isAtStartOfLength, boolean isReadingValue) {
     this.state = state;
     this.isAtStartOfTag = isAtStartOfTag;
@@ -190,11 +190,11 @@ class TLVInputState {
     public TLStruct(int tag) {
       this(tag, Integer.MAX_VALUE, 0);
     }
-    
+
     public TLStruct(TLStruct original) {
       this(original.tag, original.length, original.valueBytesRead);
     }
-    
+
     public TLStruct(int tag, int length, int valueBytesRead) {
       this.tag = tag;
       this.length = length;

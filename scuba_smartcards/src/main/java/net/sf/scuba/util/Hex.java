@@ -470,7 +470,7 @@ public final class Hex {
    * @return a hexadecimal representation of <code>data</code>.
    */
   public static String bytesToPrettyString(byte[] data) {
-    return bytesToPrettyString(data,16,true,4,null,true);
+    return bytesToPrettyString(data, 16, true, 4, null, true);
   }
 
   /**
@@ -484,11 +484,11 @@ public final class Hex {
    * @param data the byte array to print.
    * @param columns the number of bytes per line.
    * @param useIndex a boolean indicating whether each line should be started
-   *    with an index.
+   *        with an index.
    * @param indexPadWidth the padding width for index.
    * @param altIndex string to prefix if no index is used.
    * @param useASCII a boolean indicating whether each line should be ended
-   *    with an ASCII representation of the bytes in that line.
+   *        with an ASCII representation of the bytes in that line.
    *
    * @return a hexadecimal representation of <code>data</code>.
    */

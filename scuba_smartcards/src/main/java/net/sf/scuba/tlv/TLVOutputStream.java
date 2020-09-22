@@ -27,7 +27,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * TLV output stream.
+ * An output-stream for constructing TLV structures which wraps an existing
+ * output-stream.
+ *
+ * Typical use is to first write a tag using {@code writeTag(int)},
+ * and then:
+ * <ul>
+ *   <li>either directly write a value using {@code writeValue(byte[])}
+ *       (which will cause the length and that value to be written),
+ *   </li>
+ *   <li>or use a series of lower-level output-stream {@code write} calls to write
+ *       the value and terminate with a {@code writeValueEnd()}
+ *       (which will cause the length and value to be computed and written).
+ *   </li>
+ * </ul>
+ *
+ * Nested structures can be constructed by writing new tags during value construction.
  *
  * @author Martijn Oostdijk (martijn.oostdijk@gmail.com)
  *
@@ -39,9 +54,9 @@ public class TLVOutputStream extends OutputStream {
   private TLVOutputState state;
 
   /**
-   * Constructs a TLV output stream by wrapping an existing output stream.
+   * Constructs a TLV output-stream by wrapping an existing output-stream.
    *
-   * @param outputStream the existing output stream
+   * @param outputStream the existing output-stream
    */
   public TLVOutputStream(OutputStream outputStream) {
     this.outputStream = outputStream instanceof DataOutputStream ? (DataOutputStream)outputStream : new DataOutputStream(outputStream);
@@ -49,11 +64,11 @@ public class TLVOutputStream extends OutputStream {
   }
 
   /**
-   * Writes a tag to the output stream (if TLV state allows it).
+   * Writes a tag to the output-stream (if TLV state allows it).
    *
    * @param tag the tag to write
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   public void writeTag(int tag) throws IOException {
     byte[] tagAsBytes = TLVUtil.getTagAsBytes(tag);
@@ -64,11 +79,11 @@ public class TLVOutputStream extends OutputStream {
   }
 
   /**
-   * Writes a length to the output stream (if TLV state allows it).
+   * Writes a length to the output-stream (if TLV state allows it).
    *
    * @param length the length to write
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   public void writeLength(int length) throws IOException {
     byte[] lengthAsBytes = TLVUtil.getLengthAsBytes(length);
@@ -86,7 +101,7 @@ public class TLVOutputStream extends OutputStream {
    *
    * @param value the value to write
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   public void writeValue(byte[] value) throws IOException {
     if (value == null) {
@@ -105,13 +120,13 @@ public class TLVOutputStream extends OutputStream {
   }
 
   /**
-   * Writes the specified byte to this output stream.
+   * Writes the specified byte to this output-stream.
    * Note that this can only be used for writing value bytes and
    * will throw an exception unless we have already written a tag.
    *
    * @param b the byte to write
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   @Override
   public void write(int b) throws IOException {
@@ -119,13 +134,13 @@ public class TLVOutputStream extends OutputStream {
   }
 
   /**
-   * Writes the specified bytes to this output stream.
+   * Writes the specified bytes to this output-stream.
    * Note that this can only be used for writing value bytes and
    * will throw an exception unless we have already written a tag.
    *
    * @param bytes the bytes to write
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   @Override
   public void write(byte[] bytes) throws IOException {
@@ -133,7 +148,7 @@ public class TLVOutputStream extends OutputStream {
   }
 
   /**
-   * Writes the specified number of bytes to this output stream starting at the
+   * Writes the specified number of bytes to this output-stream starting at the
    * specified offset.
    * Note that this can only be used for writing value bytes and
    * will throw an exception unless we have already written a tag.
@@ -142,7 +157,7 @@ public class TLVOutputStream extends OutputStream {
    * @param offset the offset
    * @param length the number of bytes to write
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   @Override
   public void write(byte[] bytes, int offset, int length) throws IOException {
@@ -160,9 +175,9 @@ public class TLVOutputStream extends OutputStream {
 
   /**
    * Marks the end of the value written thus far. This will adjust the length and
-   * write the buffer to the underlying output stream.
+   * write the buffer to the underlying output-stream.
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   public void writeValueEnd() throws IOException {
     if (state.isAtStartOfLength()) {
@@ -182,10 +197,10 @@ public class TLVOutputStream extends OutputStream {
   }
 
   /**
-   * Flushes the underlying output stream. Note that this does not
+   * Flushes the underlying output-stream. Note that this does not
    * flush the value buffer if the current value has not been completed.
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   @Override
   public void flush() throws IOException {
@@ -193,10 +208,10 @@ public class TLVOutputStream extends OutputStream {
   }
 
   /**
-   * Closes this output stream and releases any system resources
+   * Closes this output-stream and releases any system resources
    * associated with this stream.
    *
-   * @throws IOException on error writing to the underlying output stream
+   * @throws IOException on error writing to the underlying output-stream
    */
   @Override
   public void close() throws IOException {
