@@ -101,9 +101,9 @@ public class TerminalCardService extends CardService {
    * Sends an APDU to the card.
    *
    * @param ourCommandAPDU the command apdu to send
-   * 
+   *
    * @return the response from the card, including the status word
-   * 
+   *
    * @throws CardServiceException - if the card operation failed
    */
   @Override
@@ -141,9 +141,9 @@ public class TerminalCardService extends CardService {
    *
    * @param controlCode the control code to send
    * @param command the command data for the terminal
-   * 
+   *
    * @return response from the terminal/card
-   * 
+   *
    * @throws CardServiceException - if the card operation failed
    */
   public byte[] transmitControlCommand(int controlCode, byte[] command) throws CardServiceException {
@@ -200,7 +200,7 @@ public class TerminalCardService extends CardService {
   public String toString() {
     return "TerminalCardService [" + terminal.getName() + "]";
   }
-  
+
   /**
    * Determines whether an exception indicates a tag is lost event.
    *
@@ -213,32 +213,58 @@ public class TerminalCardService extends CardService {
       return false;
     }
 
+    if (isDirectConnectionLost(e)) {
+      return true;
+    }
+
     String message = e.getMessage();
     if (message == null) {
       message = "";
     }
 
-    /*
-     * Check whether exception is likely caused by a
-     * sun.security.smartcardio.PCSCException
-     * indicating card has been removed.
-     */
     Throwable cause = null;
     Throwable rootCause = e;
 
-    while(null != (cause = rootCause.getCause())  && (rootCause != cause) ) {
+    while (null != (cause = rootCause.getCause())  && (rootCause != cause)) {
       rootCause = cause;
+      if (isDirectConnectionLost(rootCause)) {
+        return true;
+      }
     }
 
-    String rootMessage = rootCause.getMessage();
-    if (rootMessage == null) {
-      rootMessage = "";
+    return false;
+  }
+
+  /**
+   * Determines whether an exception directly indicates a tag is lost event.
+   * Checks whether exception is likely caused by a
+   * {@code sun.security.smartcardio.PCSCException}
+   * indicating card has been removed.
+   *
+   *
+   * @param e an exception
+   *
+   * @return whether the exception indicates a tag is lost event
+   */
+  private boolean isDirectConnectionLost(Throwable e) {
+    if (e == null) {
+      return false;
     }
-    if ("SCARD_W_REMOVED_CARD".equals(rootMessage)) {
+
+    String rootMessage = e.getMessage();
+    if (rootMessage == null) {
+      return false;
+    }
+
+    if (rootMessage.contains("SCARD_W_REMOVED_CARD")) {
       return true;
     }
 
-    if (rootMessage != null && rootMessage.contains("SCARD_E_NOT_TRANSACTED")) {
+    if (rootMessage.contains("SCARD_E_NOT_TRANSACTED")) {
+      return true;
+    }
+
+    if (rootMessage.contains("SCARD_E_NO_SMARTCARD")) {
       return true;
     }
 
