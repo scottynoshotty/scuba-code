@@ -2,9 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <groupId>net.sf.scuba</groupId>
   <artifactId>scuba-smartcards</artifactId>
-  <version>0.0.19</version>
+  <version>0.0.20-SNAPSHOT</version>
 
   <name>SCUBA</name>
   <description>Smart Card Utils for Better Access.</description>
@@ -31,6 +32,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jdk.version>7</jdk.version>
+    <java.version>${jdk.version}</java.version>
+    <maven.compiler.source>${jdk.version}</maven.compiler.source>
+    <maven.compiler.target>${jdk.version}</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -62,6 +68,17 @@
           <autoReleaseAfterClose>true</autoReleaseAfterClose>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>7</source>
+          <target>7</target>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -75,7 +92,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>2.2.1</version>
+            <version>3.2.0</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -90,10 +107,12 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>2.9.1</version>
+            <version>3.2.0</version>
             <configuration>
+              <source>8</source>
               <author>false</author>
               <version>false</version>
+              <detectJavaApiLink>false</detectJavaApiLink>
             </configuration>
             <executions>
               <execution>

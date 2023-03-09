@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2018  The SCUBA team.
+ * Copyright (C) 2009 - 2023  The SCUBA team.
  *
  * $Id$
  */
@@ -128,6 +128,9 @@ public class ISOCountry extends Country implements Serializable {
   /** ISO 3166 country. */
   public static final Country BO = new ISOCountry(0x068, "BO", "BOL", "Bolivia", "Bolivian");
 
+  /** ISO 3166 country. Added to this list on 20230309. */
+  public static final Country BQ = new ISOCountry(0x535, "BQ", "BES", "Bonaire, Sint Eustatius and Saba");
+
   /** ISO 3166 country. */
   public static final Country BR = new ISOCountry(0x076, "BR", "BRA", "Brazil", "Brazilian");
 
@@ -193,6 +196,9 @@ public class ISOCountry extends Country implements Serializable {
 
   /** ISO 3166 country. */
   public static final Country CV = new ISOCountry(0x132, "CV", "CPV", "Cape Verde", "Cape Verdean");
+
+  /** ISO 3166 country. Added to this list on 20230309. */
+  public static final Country  CW = new ISOCountry(0x531, "CW", "CUW", "Curacao");
 
   /** ISO 3166 country. */
   public static final Country CX = new ISOCountry(0x162, "CX", "CXR", "Christmas Island");
@@ -656,11 +662,17 @@ public class ISOCountry extends Country implements Serializable {
   /** ISO 3166 country. */
   public static final Country SR = new ISOCountry(0x740, "SR", "SUR", "Suriname", "Surinamese");
 
+  /** ISO 3166 country. Added to this list on 20230309. */
+  public static final Country SS = new ISOCountry(0x728, "SS", "SSD", "South Sudan");
+
   /** ISO 3166 country. */
   public static final Country ST = new ISOCountry(0x678, "ST", "STP", "Sao Tome and Principe", "Sao Tomean");
 
   /** ISO 3166 country. */
   public static final Country SV = new ISOCountry(0x222, "SV", "SLV", "El Salvador", "Salvadoran");
+
+  /** ISO 3166 country. Added to this list on 20230309. */
+  public static final Country SX = new ISOCountry(0x534, "SX", "SXM", "Sint Maarten (Dutch part)");
 
   /** ISO 3166 country. */
   public static final Country SY = new ISOCountry(0x760, "SY", "SYR", "Syrian Arab Republic", "Syrian");

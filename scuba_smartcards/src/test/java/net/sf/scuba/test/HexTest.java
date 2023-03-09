@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2018  The SCUBA team.
+ * Copyright (C) 2009 - 2023  The SCUBA team.
  *
  * $Id$
  */
@@ -37,7 +37,7 @@ public class HexTest extends TestCase {
     String hexString = Hex.bytesToHexString(bytes);
     byte[] decodedBytes = Hex.hexStringToBytes(hexString);
     assertTrue(Arrays.equals(bytes,  decodedBytes));
-    
+
     String recodedHexString = Hex.bytesToHexString(decodedBytes);
     assertEquals(hexString, recodedHexString);
   }

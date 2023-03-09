@@ -15,7 +15,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  *
- * Copyright (C) 2009 - 2018  The SCUBA team.
+ * Copyright (C) 2009 - 2023  The SCUBA team.
  *
  * $Id$
  */
@@ -76,7 +76,7 @@ public class TLVTest extends TestCase {
       testSimpleRandomValuesTLV(ISO7816.TAG_SM_CRYPTOGRAPHIC_CHECKSUM);
       testSimpleRandomValuesTLV(ISO7816.TAG_SM_EXPECTED_LENGTH);
       testSimpleRandomValuesTLV(ISO7816.TAG_SM_STATUS_WORD);
-      
+
       /* Not valid tags? */
       //  testSimpleRandomValuesTLV(0x00);
       //  testSimpleRandomValuesTLV(0x1F);
@@ -88,7 +88,7 @@ public class TLVTest extends TestCase {
       //  testSimpleRandomValuesTLV(0xDF);
       //  testSimpleRandomValuesTLV(0xFF);
     }
-  }  
+  }
 
   public void testSimpleRandomValuesTLV(int tag) {
 
@@ -145,7 +145,7 @@ public class TLVTest extends TestCase {
       fail(e.getMessage());
     }
   }
-  
+
   public void testSimpleTLVStreamWrite(int tag, byte[] value) {
     try {
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -153,7 +153,7 @@ public class TLVTest extends TestCase {
 
       try {
         tlvOutputStream.writeTag(tag);
-        
+
         Random random = new Random();
         int firstLength = random.nextInt(Math.max(0, value.length - 1));
         int secondLength = value.length - firstLength;
@@ -245,7 +245,7 @@ public class TLVTest extends TestCase {
         int actualLevel2SecondLength = tlvInputStream.readLength();
         assertEquals(secondValue.length, actualLevel2SecondLength);
         byte[] actualSecondValue = tlvInputStream.readValue();
-        assertTrue(Arrays.equals(secondValue, actualSecondValue));   
+        assertTrue(Arrays.equals(secondValue, actualSecondValue));
       } finally {
         tlvInputStream.close();
       }
