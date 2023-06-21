@@ -162,7 +162,7 @@ public class IsoDepCardService extends CardService {
       isoDep.close();
       state = SESSION_STOPPED_STATE;
     } catch (IOException e) {
-      /* Disconnect failed? Fine... */
+      // Disconnect failed? Fine...
     }
   }
 
@@ -204,7 +204,7 @@ public class IsoDepCardService extends CardService {
    */
   private boolean isDirectConnectionLost(Throwable e) {
     if (!isoDep.isConnected()) {
-      /* Connection lost, independent from precise exception. */
+      // Connection lost, independent from precise exception.
       return true;
     }
 
@@ -215,7 +215,7 @@ public class IsoDepCardService extends CardService {
     String exceptionClassName = e.getClass().getName();
 
     if (exceptionClassName != null && exceptionClassName.contains("TagLostException")) {
-      /* Exception is an Android TagLostException. */
+      // Exception is an Android TagLostException.
       return true;
     }
 
@@ -225,8 +225,19 @@ public class IsoDepCardService extends CardService {
     }
 
     if (message.toLowerCase().contains("tag was lost")) {
-      /* Exception is likely caused by an Android TagLostException. */
+      // Exception is likely caused by an Android TagLostException.
       return true;
+    }
+
+    if (e instanceof CardServiceException) {
+      if (message.toLowerCase().contains("not connected")) {
+        return true;
+      }
+
+      if (message.toLowerCase().contains("failed response")) {
+        // We did not even get a status word in transmit, connection is probably lost.
+        return true;
+      }
     }
 
     return false;
